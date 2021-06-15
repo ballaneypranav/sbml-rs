@@ -5,7 +5,7 @@ use quick_xml::events::Event;
 use quick_xml::Reader;
 use mathml_rs::MathNode;
 
-use macros::*;
+use sbml_macros::*;
 mod structs;
 use structs::*;
 

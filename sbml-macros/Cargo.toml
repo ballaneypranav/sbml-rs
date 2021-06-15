@@ -1,5 +1,5 @@
 [package]
-name = "parser"
+name = "sbml-macros"
 version = "0.1.0"
 authors = ["Pranav Ballaney <ballaneypranav@gmail.com>"]
 edition = "2018"
@@ -7,6 +7,10 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-quick-xml = "0.22.0"
-macros = { path = "../macros" }
-mathml-rs = { path = "../../mathml-rs" }
+quote = "1.0.9"
+syn = { version = "1.0.73", features = ["extra-traits", "full" ]}
+proc-macro2 = "1.0.27"
+convert_case = "0.4.0"
+
+[lib]
+proc-macro = true

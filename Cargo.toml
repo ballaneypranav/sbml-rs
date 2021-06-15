@@ -1,8 +1,8 @@
 [workspace]
 
 members = [
-    "parser",
-    "macros"
+    "sbml-rs",
+    "sbml-macros"
 ]
 
 
