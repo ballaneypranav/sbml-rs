@@ -122,11 +122,13 @@ impl MathTag {
             parent: None,
         }
     }
+    pub fn with_nodes(mut self, nodes: Vec<MathNode>) -> Self {
+        self.nodes = nodes;
+        self
+    }
 
-    pub fn new_from_node(node: MathNode) -> Self {
-        MathTag {
-            nodes: vec![node],
-            parent: None,
-        }
+    pub fn with_parent(mut self, parent: TagIndex) -> Self {
+        self.parent = Some(parent);
+        self
     }
 }
