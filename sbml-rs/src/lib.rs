@@ -3,9 +3,10 @@ use std::str;
 
 use quick_xml::events::Event;
 use quick_xml::Reader;
-use mathml_rs::MathNode;
 
-use sbml_macros::*;
+use sbml_macros::{
+    push, attach, close
+};
 mod structs;
 use structs::*;
 
@@ -50,12 +51,13 @@ fn parse(filename: &str) {
                     b"reaction" => push!(Reaction into ListOfReactions),
                     b"kineticLaw" => attach!(KineticLaw to Reaction),
                     b"math" => {
-                        let (math_tag, returned_reader) = mathml_rs::parse_fragment(reader);
+                        let (math_nodes, returned_reader) = mathml_rs::parse_fragment(reader);
                         reader = returned_reader;
 
                         match container[current] {
                             Tag::KineticLaw (ref mut parent) => {
-                                new_tag = Some(Tag::MathTag(MathTag::new_from_node(math_tag)));
+                                let math_tag = MathTag::new().with_nodes(math_nodes).with_parent(current);
+                                new_tag = Some(Tag::MathTag(math_tag));
                                 current = container_len;
                                 parent.math = Some(current.clone());
                                 stack.push(current.clone());
@@ -94,7 +96,7 @@ fn parse(filename: &str) {
         }
     }
     for item in container {
-        println!("{:?}", item);
+        println!("{:#?}", item);
     }
     println!("{:?}", stack);
     println!("{:?}", current);
