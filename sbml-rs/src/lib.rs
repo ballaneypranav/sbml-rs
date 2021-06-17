@@ -136,7 +136,7 @@ fn parse(filename: &str) {
         }
     }
     for item in container {
-        println!("{:#?}", item);
+        println!("{:?}", item);
     }
     println!("{:?}", stack);
     println!("{:?}", current);
@@ -147,7 +147,7 @@ mod tests {
     use super::*;
     #[test]
     fn it_works() {
-        let filename = "../models/small.xml";
+        let filename = "../../testsuites/core-semantic/00001/00001-sbml-l3v2.xml";
 
         parse(filename);
     }

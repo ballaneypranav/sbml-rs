@@ -98,7 +98,7 @@ pub fn push(input: TokenStream) -> TokenStream {
                 let mut #parent_field_ident = #tag::default();
                 // parse any attributes, keeping their types in mind
                 let attributes = e.attributes().map(|a| a.unwrap()).collect::<Vec<_>>();
-                println!("{:?}", attributes);
+                //println!("{:?}", attributes);
                 for attribute in attributes {
                     let key = str::from_utf8(attribute.key).unwrap();
                     let value = attribute.unescape_and_decode_value(&reader).unwrap();
@@ -107,7 +107,9 @@ pub fn push(input: TokenStream) -> TokenStream {
                             #parent_field_ident.#attr_idents =
                                 Some(value.parse::<#attr_types>().expect("Incorrect type"));
                         })*
-                        _ => {}
+                        _ => {
+                            println!("Attribute not parsed: {}", key);
+                        }
                     }
                 }
 
@@ -191,6 +193,7 @@ pub fn close(input: TokenStream) -> TokenStream {
     //println!("{:?}", input);
 
     let tag = &input.tag;
+    let tag_str = input.tag.to_string();
 
     let tokens = quote! {
         match container[current] {
@@ -198,8 +201,11 @@ pub fn close(input: TokenStream) -> TokenStream {
                 stack.pop();
                 current = stack.last().unwrap().to_owned();
                 tag_field.parent = Some(current.clone());
+                //println!("Closing {}", #tag_str);
             }
-            _ => {}
+            _ => {
+                println!("Attempted to close {} but currently in {:?}", #tag_str, container[current]);
+            }
         }
     };
     tokens.into()
