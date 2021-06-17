@@ -14,6 +14,7 @@ use structs::model::*;
 use structs::species::*;
 use structs::reactions::*;
 use structs::math::*;
+use structs::units::*;
 
 #[allow(unused_variables, unused_assignments)]
 fn parse(filename: &str) {
@@ -46,6 +47,17 @@ fn parse(filename: &str) {
                 match e.name() {
                     b"listOfSpecies" => attach!(ListOfSpecies to Model),
                     b"listOfReactions" => attach!(ListOfReactions to Model),
+                    b"listOfUnitDefinitions" => attach!(ListOfUnitDefinitions to Model),
+                    b"unitDefinition" => push!(UnitDefinition with
+                                                id as String
+                                            into ListOfUnitDefinitions),
+                    b"listOfUnits" => attach!(ListOfUnits to UnitDefinition),
+                    b"unit" => push!(Unit with 
+                                        kind as String,
+                                        exponent as f64,
+                                        scale as i64,
+                                        multiplier as f64
+                                        into ListOfUnits),
                     b"species" => {
                         push!(Species with 
                                 name as String, 
@@ -86,6 +98,10 @@ fn parse(filename: &str) {
             Ok(Event::End(ref e)) => match e.name() {
                 b"listOfSpecies" => close![ListOfSpecies],
                 b"listOfReactions" => close![ListOfReactions],
+                b"listOfUnitDefinitions" => close![ListOfUnitDefinitions],
+                b"unitDefinition" => close![UnitDefinition],
+                b"listOfUnits" => close![ListOfUnits],
+                b"unit" => close![Unit],
                 b"species" => close![Species],
                 b"reaction" => close![Reaction],
                 b"kineticLaw" => close![KineticLaw],
