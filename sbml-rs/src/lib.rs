@@ -7,9 +7,13 @@ use quick_xml::Reader;
 use sbml_macros::{
     push, attach, close
 };
-mod structs;
-use structs::*;
 
+mod structs;
+use structs::tag::*;
+use structs::model::*;
+use structs::species::*;
+use structs::reactions::*;
+use structs::math::*;
 
 #[allow(unused_variables, unused_assignments)]
 fn parse(filename: &str) {
@@ -58,14 +62,14 @@ fn parse(filename: &str) {
                             Tag::KineticLaw (ref mut parent) => {
                                 let math_tag = MathTag::new().with_nodes(math_nodes).with_parent(current);
                                 new_tag = Some(Tag::MathTag(math_tag));
-                                current = container_len;
                                 parent.math = Some(current.clone());
-                                stack.push(current.clone());
                             }
                             _ => {}
                         }
 
                     }
+                    b"sbml" => {}
+                    b"model" => {}
                     _ => {
                         println!("Tag not parsed: {}", str::from_utf8(e.name()).unwrap());
                     }
