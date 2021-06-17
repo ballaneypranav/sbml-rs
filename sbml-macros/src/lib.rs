@@ -85,7 +85,7 @@ pub fn push(input: TokenStream) -> TokenStream {
     // also need strings for matching tokens
     let mut attr_str: Vec<String> = Vec::new();
     for ident in &attr_idents {
-        attr_str.push(String::from(ident.to_string()));
+        attr_str.push(String::from(ident.to_string().to_case(Case::Camel)));
     }
 
     let tokens = quote! {
