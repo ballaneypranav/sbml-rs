@@ -10,6 +10,7 @@ mod structs;
 use structs::compartments::*;
 use structs::math::*;
 use structs::model::*;
+use structs::parameters::*;
 use structs::reactions::*;
 use structs::species::*;
 use structs::tag::*;
@@ -44,8 +45,6 @@ fn parse(filename: &str) {
             Ok(Event::Start(ref e)) => {
                 let mut new_tag = None;
                 match e.name() {
-                    b"listOfSpecies" => attach!(ListOfSpecies to Model),
-                    b"listOfReactions" => attach!(ListOfReactions to Model),
                     b"listOfUnitDefinitions" => attach!(ListOfUnitDefinitions to Model),
                     b"unitDefinition" => push!(UnitDefinition with
                                                 id as String
@@ -67,6 +66,14 @@ fn parse(filename: &str) {
                                                 sbo_term as String,
                                                 size as f64
                                             into ListOfCompartments),
+                    b"listOfParameters" => attach!(ListOfParameters to Model),
+                    b"parameter" => push!(Parameter with
+                                            id as String,
+                                            value as f64,
+                                            units as String,
+                                            constant as bool
+                                        into ListOfParameters),
+                    b"listOfSpecies" => attach!(ListOfSpecies to Model),
                     b"species" => push!(Species with
                                             id as String,
                                             name as String,
@@ -81,6 +88,7 @@ fn parse(filename: &str) {
                                             constant as bool,
                                             conversion_factor as String,
                                     into ListOfSpecies),
+                    b"listOfReactions" => attach!(ListOfReactions to Model),
                     b"reaction" => push!(Reaction into ListOfReactions),
                     b"kineticLaw" => attach!(KineticLaw to Reaction),
                     b"math" => {

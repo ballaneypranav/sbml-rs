@@ -2,6 +2,7 @@ pub type TagIndex = usize;
 use super::compartments::*;
 use super::math::*;
 use super::model::*;
+use super::parameters::*;
 use super::reactions::*;
 use super::species::*;
 use super::units::*;
@@ -21,4 +22,6 @@ pub enum Tag {
     Unit(Unit),
     ListOfCompartments(ListOfCompartments),
     Compartment(Compartment),
+    ListOfParameters(ListOfParameters),
+    Parameter(Parameter),
 }
