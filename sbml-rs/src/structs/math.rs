@@ -1,21 +1,13 @@
-//use std::collections::HashMap;
-
-use mathml_rs::MathNode;
 use super::tag::TagIndex;
+use mathml_rs::MathNode;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct MathTag {
     pub nodes: Vec<MathNode>,
     pub parent: Option<TagIndex>,
 }
 
 impl MathTag {
-    pub fn new() -> Self {
-        MathTag {
-            nodes: Vec::new(),
-            parent: None,
-        }
-    }
     pub fn with_nodes(mut self, nodes: Vec<MathNode>) -> Self {
         self.nodes = nodes;
         self

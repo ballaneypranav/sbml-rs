@@ -4,18 +4,16 @@ use std::str;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
-use sbml_macros::{
-    push, attach, close
-};
+use sbml_macros::{attach, close, push};
 
 mod structs;
-use structs::tag::*;
-use structs::model::*;
-use structs::species::*;
-use structs::reactions::*;
-use structs::math::*;
-use structs::units::*;
 use structs::compartments::*;
+use structs::math::*;
+use structs::model::*;
+use structs::reactions::*;
+use structs::species::*;
+use structs::tag::*;
+use structs::units::*;
 
 #[allow(unused_variables, unused_assignments)]
 fn parse(filename: &str) {
@@ -33,7 +31,7 @@ fn parse(filename: &str) {
     let mut container = Vec::new();
     let mut container_len = 0;
 
-    let model = Model::new();
+    let model = Model::default();
     container.push(Tag::Model(model));
     container_len += 1;
     let mut current = 0;
@@ -82,8 +80,10 @@ fn parse(filename: &str) {
                         reader = returned_reader;
 
                         match container[current] {
-                            Tag::KineticLaw (ref mut parent) => {
-                                let math_tag = MathTag::new().with_nodes(math_nodes).with_parent(current);
+                            Tag::KineticLaw(ref mut parent) => {
+                                let math_tag = MathTag::default()
+                                    .with_nodes(math_nodes)
+                                    .with_parent(current);
                                 new_tag = Some(Tag::MathTag(math_tag));
                                 parent.math = Some(current.clone());
                             }

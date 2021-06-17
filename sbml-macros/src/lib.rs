@@ -24,7 +24,7 @@ pub fn attach(input: TokenStream) -> TokenStream {
     let tokens = quote! {
         match container[current] {
             Tag::#parent (ref mut parent) => {
-                let #parent_field_ident = #tag::new();
+                let #parent_field_ident = #tag::default();
                 new_tag = Some(Tag::#tag(#parent_field_ident));
                 current = container_len;
                 parent.#parent_field_ident = Some(current.clone());
@@ -95,7 +95,7 @@ pub fn push(input: TokenStream) -> TokenStream {
             // TODO: repeat for multiple possible parents
             Tag::#parent (ref mut parent) => {
                 // instantiate object of the tag that was found
-                let mut #parent_field_ident = #tag::new();
+                let mut #parent_field_ident = #tag::default();
                 // parse any attributes, keeping their types in mind
                 let attributes = e.attributes().map(|a| a.unwrap()).collect::<Vec<_>>();
                 println!("{:?}", attributes);
