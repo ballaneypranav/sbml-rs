@@ -15,6 +15,7 @@ use structs::species::*;
 use structs::reactions::*;
 use structs::math::*;
 use structs::units::*;
+use structs::compartments::*;
 
 #[allow(unused_variables, unused_assignments)]
 fn parse(filename: &str) {
@@ -58,6 +59,16 @@ fn parse(filename: &str) {
                                         scale as i64,
                                         multiplier as f64
                                         into ListOfUnits),
+                    b"listOfCompartments" => attach!(ListOfCompartments to Model),
+                    b"compartment" => push!(Compartment with
+                                                name as String,
+                                                id as String,
+                                                units as String,
+                                                constant as bool,
+                                                spatial_dimensions as f64,
+                                                sbo_term as String,
+                                                size as f64
+                                            into ListOfCompartments),
                     b"species" => {
                         push!(Species with 
                                 name as String, 
@@ -102,6 +113,8 @@ fn parse(filename: &str) {
                 b"unitDefinition" => close![UnitDefinition],
                 b"listOfUnits" => close![ListOfUnits],
                 b"unit" => close![Unit],
+                b"listOfCompartments" => close![ListOfCompartments],
+                b"compartment" => close![Compartment],
                 b"species" => close![Species],
                 b"reaction" => close![Reaction],
                 b"kineticLaw" => close![KineticLaw],
