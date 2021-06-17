@@ -67,12 +67,20 @@ fn parse(filename: &str) {
                                                 sbo_term as String,
                                                 size as f64
                                             into ListOfCompartments),
-                    b"species" => {
-                        push!(Species with 
-                                name as String, 
-                                compartment as String 
-                            into ListOfSpecies)
-                    }
+                    b"species" => push!(Species with
+                                            id as String,
+                                            name as String,
+                                            meta_id as String,
+                                            sbo_term as String,
+                                            compartment as String,
+                                            initial_concentration as f64,
+                                            initial_amount as f64,
+                                            substance_units as String,
+                                            has_only_substance_units as bool,
+                                            boundary_condition as bool,
+                                            constant as bool,
+                                            conversion_factor as String,
+                                    into ListOfSpecies),
                     b"reaction" => push!(Reaction into ListOfReactions),
                     b"kineticLaw" => attach!(KineticLaw to Reaction),
                     b"math" => {
@@ -89,7 +97,6 @@ fn parse(filename: &str) {
                             }
                             _ => {}
                         }
-
                     }
                     b"sbml" => {}
                     b"model" => {}
