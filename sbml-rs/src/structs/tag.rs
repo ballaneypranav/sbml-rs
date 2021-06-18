@@ -7,6 +7,7 @@ use super::reactions::*;
 use super::species::*;
 use super::units::*;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub enum Tag {
     Model(Model),

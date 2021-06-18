@@ -71,7 +71,7 @@ pub fn attach(input: TokenStream) -> TokenStream {
                             Some(value.parse::<#attr_types>().expect("Incorrect type"));
                     })*
                     _ => {
-                        println!("Attribute '{}' not parsed for '{}'", key, #tag_str);
+                        errors.push(format!("Attribute '{}' not parsed for '{}'", key, #tag_str));
                     }
                 }
             }

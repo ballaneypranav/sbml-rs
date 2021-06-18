@@ -1,4 +1,3 @@
-use std::env;
 use std::str;
 
 use quick_xml::events::Event;
@@ -16,10 +15,8 @@ use structs::species::*;
 use structs::tag::*;
 use structs::units::*;
 
-#[allow(unused_variables, unused_assignments)]
-fn parse(filename: &str) {
-    println!("{}", filename);
-
+#[allow(unused_variables, unused_assignments, dead_code)]
+fn parse(filename: &str) -> Result<(), Vec<String>> {
     // read file
     //let file = File::open().unwrap();
     let mut reader = Reader::from_file(filename).expect("File error.");
@@ -37,7 +34,8 @@ fn parse(filename: &str) {
     container_len += 1;
     let mut current = 0;
     stack.push(current);
-    println!("{:?}", current);
+
+    let mut errors = Vec::new();
 
     loop {
         match reader.read_event(&mut buf) {
@@ -126,7 +124,10 @@ fn parse(filename: &str) {
                     b"sbml" => {}
                     b"model" => {}
                     _ => {
-                        println!("Tag not parsed: {}", str::from_utf8(e.name()).unwrap());
+                        errors.push(format!(
+                            "Tag not parsed: {}",
+                            str::from_utf8(e.name()).unwrap()
+                        ));
                     }
                 }
                 match new_tag {
@@ -165,11 +166,17 @@ fn parse(filename: &str) {
             _ => (), // There are several other `Event`s we do not consider here
         }
     }
-    for item in container {
-        println!("{:?}", item);
+    //for item in container {
+    //println!("{:?}", item);
+    //}
+    //println!("{:?}", stack);
+    //println!("{:?}", current);
+
+    if errors.is_empty() {
+        return Ok(());
+    } else {
+        return Err(errors);
     }
-    println!("{:?}", stack);
-    println!("{:?}", current);
 }
 
 #[cfg(test)]
@@ -177,8 +184,20 @@ mod tests {
     use super::*;
     #[test]
     fn it_works() {
-        let filename = "../../testsuites/core-semantic/00001/00001-sbml-l3v2.xml";
-
-        parse(filename);
+        let mut n = 1;
+        for n in 1..100 {
+            let filename = format!(
+                "../../testsuites/core-semantic/{:0>5}/{:0>5}-sbml-l3v2.xml",
+                n, n
+            );
+            println!("{}", filename);
+            let result = parse(&filename);
+            match result {
+                Ok(()) => {}
+                Err(errors) => {
+                    println!("{:?}", errors);
+                }
+            }
+        }
     }
 }

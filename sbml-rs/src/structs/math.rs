@@ -7,6 +7,7 @@ pub struct MathTag {
     pub parent: Option<TagIndex>,
 }
 
+#[allow(dead_code)]
 impl MathTag {
     pub fn with_nodes(mut self, nodes: Vec<MathNode>) -> Self {
         self.nodes = nodes;
