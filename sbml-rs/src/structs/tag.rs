@@ -10,12 +10,6 @@ use super::units::*;
 #[derive(Debug)]
 pub enum Tag {
     Model(Model),
-    ListOfSpecies(ListOfSpecies),
-    ListOfReactions(ListOfReactions),
-    Species(Species),
-    Reaction(Reaction),
-    KineticLaw(KineticLaw),
-    MathTag(MathTag),
     ListOfUnitDefinitions(ListOfUnitDefinitions),
     UnitDefinition(UnitDefinition),
     ListOfUnits(ListOfUnits),
@@ -24,4 +18,13 @@ pub enum Tag {
     Compartment(Compartment),
     ListOfParameters(ListOfParameters),
     Parameter(Parameter),
+    ListOfSpecies(ListOfSpecies),
+    Species(Species),
+    ListOfReactions(ListOfReactions),
+    Reaction(Reaction),
+    ListOfReactants(ListOfReactants),
+    ListOfProducts(ListOfProducts),
+    SpeciesReference(SpeciesReference),
+    KineticLaw(KineticLaw),
+    MathTag(MathTag),
 }
