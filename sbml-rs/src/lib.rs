@@ -4,7 +4,7 @@ use std::str;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
-use sbml_macros::{attach, close, push};
+use sbml_macros::{attach, close};
 
 mod structs;
 use structs::compartments::*;
@@ -46,18 +46,18 @@ fn parse(filename: &str) {
                 let mut new_tag = None;
                 match e.name() {
                     b"listOfUnitDefinitions" => attach!(ListOfUnitDefinitions to Model),
-                    b"unitDefinition" => push!(UnitDefinition with
+                    b"unitDefinition" => attach!(UnitDefinition with
                                                 id as String
-                                            into ListOfUnitDefinitions),
+                                            to ListOfUnitDefinitions),
                     b"listOfUnits" => attach!(ListOfUnits to UnitDefinition),
-                    b"unit" => push!(Unit with 
+                    b"unit" => attach!(Unit with 
                                         kind as String,
                                         exponent as f64,
                                         scale as i64,
                                         multiplier as f64
-                                        into ListOfUnits),
+                                        to ListOfUnits),
                     b"listOfCompartments" => attach!(ListOfCompartments to Model),
-                    b"compartment" => push!(Compartment with
+                    b"compartment" => attach!(Compartment with
                                                 name as String,
                                                 id as String,
                                                 units as String,
@@ -65,16 +65,17 @@ fn parse(filename: &str) {
                                                 spatial_dimensions as f64,
                                                 sbo_term as String,
                                                 size as f64
-                                            into ListOfCompartments),
+                                            to ListOfCompartments),
                     b"listOfParameters" => attach!(ListOfParameters to Model),
-                    b"parameter" => push!(Parameter with
+                    b"parameter" => attach!(Parameter with
                                             id as String,
+                                            name as String,
                                             value as f64,
                                             units as String,
                                             constant as bool
-                                        into ListOfParameters),
+                                        to ListOfParameters),
                     b"listOfSpecies" => attach!(ListOfSpecies to Model),
-                    b"species" => push!(Species with
+                    b"species" => attach!(Species with
                                             id as String,
                                             name as String,
                                             meta_id as String,
@@ -87,9 +88,25 @@ fn parse(filename: &str) {
                                             boundary_condition as bool,
                                             constant as bool,
                                             conversion_factor as String,
-                                    into ListOfSpecies),
+                                    to ListOfSpecies),
                     b"listOfReactions" => attach!(ListOfReactions to Model),
-                    b"reaction" => push!(Reaction into ListOfReactions),
+                    b"reaction" => attach!(Reaction with
+                                             id as String,
+                                             reversible as bool,
+                                             compartment as String,
+                                             name as String,
+                                             sbo_term as String
+                                        to ListOfReactions),
+                    b"listOfReactants" => attach!(ListOfReactants to Reaction),
+                    b"listOfProducts" => attach!(ListOfProducts to Reaction),
+                    b"speciesReference" => attach!(SpeciesReference with
+                                                    id as String,
+                                                    name as String,
+                                                    species as String,
+                                                    constant as bool,
+                                                    sbo_term as String,
+                                                    stoichiometry as f64,
+                                        to ListOfReactants | ListOfProducts),
                     b"kineticLaw" => attach!(KineticLaw to Reaction),
                     b"math" => {
                         let (math_nodes, returned_reader) = mathml_rs::parse_fragment(reader);
@@ -122,16 +139,21 @@ fn parse(filename: &str) {
             }
             // for each closing tag
             Ok(Event::End(ref e)) => match e.name() {
-                b"listOfSpecies" => close![ListOfSpecies],
-                b"listOfReactions" => close![ListOfReactions],
                 b"listOfUnitDefinitions" => close![ListOfUnitDefinitions],
                 b"unitDefinition" => close![UnitDefinition],
                 b"listOfUnits" => close![ListOfUnits],
                 b"unit" => close![Unit],
                 b"listOfCompartments" => close![ListOfCompartments],
                 b"compartment" => close![Compartment],
+                b"listOfParameters" => close![ListOfParameters],
+                b"parameter" => close![Parameter],
+                b"listOfSpecies" => close![ListOfSpecies],
                 b"species" => close![Species],
+                b"listOfReactions" => close![ListOfReactions],
                 b"reaction" => close![Reaction],
+                b"listOfReactants" => close![ListOfReactants],
+                b"listOfProducts" => close![ListOfProducts],
+                b"speciesReference" => close![SpeciesReference],
                 b"kineticLaw" => close![KineticLaw],
                 b"math" => close![MathTag],
                 _ => {}

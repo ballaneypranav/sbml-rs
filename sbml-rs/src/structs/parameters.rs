@@ -9,6 +9,7 @@ pub struct ListOfParameters {
 #[derive(Debug, Default)]
 pub struct Parameter {
     pub id: Option<String>,
+    pub name: Option<String>,
     pub value: Option<f64>,
     pub units: Option<String>,
     pub constant: Option<bool>,
