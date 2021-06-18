@@ -124,10 +124,11 @@ fn parse(filename: &str) -> Result<(), Vec<String>> {
                     b"sbml" => {}
                     b"model" => {}
                     _ => {
-                        errors.push(format!(
-                            "Tag not parsed: {}",
-                            str::from_utf8(e.name()).unwrap()
-                        ));
+                        //errors.push(format!(
+                        //"Tag not parsed: {}",
+                        //str::from_utf8(e.name()).unwrap()
+                        //));
+                        panic!("Tag not parsed: {}", str::from_utf8(e.name()).unwrap());
                     }
                 }
                 match new_tag {
@@ -184,7 +185,6 @@ mod tests {
     use super::*;
     #[test]
     fn it_works() {
-        let mut n = 1;
         for n in 1..100 {
             let filename = format!(
                 "../../testsuites/core-semantic/{:0>5}/{:0>5}-sbml-l3v2.xml",

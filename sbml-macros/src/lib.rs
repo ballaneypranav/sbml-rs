@@ -71,7 +71,8 @@ pub fn attach(input: TokenStream) -> TokenStream {
                             Some(value.parse::<#attr_types>().expect("Incorrect type"));
                     })*
                     _ => {
-                        errors.push(format!("Attribute '{}' not parsed for '{}'", key, #tag_str));
+                        //errors.push(format!("Attribute '{}' not parsed for '{}'", key, #tag_str));
+                        panic!("Attribute '{}' not parsed for '{}'", key, #tag_str);
                     }
                 }
             }
@@ -190,7 +191,7 @@ pub fn close(input: TokenStream) -> TokenStream {
                 //println!("Closing {}", #tag_str);
             }
             _ => {
-                println!("Attempted to close {} but currently in {:?}", #tag_str, container[current]);
+                panic!("Attempted to close {} but currently in {:?}", #tag_str, container[current]);
             }
         }
     };
