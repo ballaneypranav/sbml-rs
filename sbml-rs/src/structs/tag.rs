@@ -1,5 +1,6 @@
 pub type TagIndex = usize;
 use super::compartments::*;
+use super::function_definitions::*;
 use super::math::*;
 use super::model::*;
 use super::parameters::*;
@@ -28,4 +29,6 @@ pub enum Tag {
     SpeciesReference(SpeciesReference),
     KineticLaw(KineticLaw),
     MathTag(MathTag),
+    ListOfFunctionDefinitions(ListOfFunctionDefinitions),
+    FunctionDefinition(FunctionDefinition),
 }

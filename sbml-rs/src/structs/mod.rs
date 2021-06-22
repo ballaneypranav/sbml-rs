@@ -1,4 +1,5 @@
 pub mod compartments;
+pub mod function_definitions;
 pub mod math;
 pub mod model;
 pub mod parameters;

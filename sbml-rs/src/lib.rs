@@ -7,6 +7,7 @@ use sbml_macros::{attach, close};
 
 mod structs;
 use structs::compartments::*;
+use structs::function_definitions::*;
 use structs::math::*;
 use structs::model::*;
 use structs::parameters::*;
@@ -16,7 +17,7 @@ use structs::tag::*;
 use structs::units::*;
 
 #[allow(unused_variables, unused_assignments, dead_code)]
-fn parse(filename: &str) -> Result<(), Vec<String>> {
+fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
     // read file
     //let file = File::open().unwrap();
     let mut reader = Reader::from_file(filename).expect("File error.");
@@ -34,8 +35,6 @@ fn parse(filename: &str) -> Result<(), Vec<String>> {
     container_len += 1;
     let mut current = 0;
     stack.push(current);
-
-    let mut errors = Vec::new();
 
     loop {
         match reader.read_event(&mut buf) {
@@ -121,6 +120,14 @@ fn parse(filename: &str) -> Result<(), Vec<String>> {
                             _ => {}
                         }
                     }
+                    b"listOfFunctionDefinitions" => attach!(ListOfFunctionDefinitions to Model),
+                    b"functionDefinition" => {
+                        attach!(FunctionDefinition with
+                                    id as String,
+                                    name as String,
+                                    sbo_term as String
+                                to ListOfFunctionDefinitions)
+                    }
                     b"sbml" => {}
                     b"model" => {}
                     _ => {
@@ -158,6 +165,8 @@ fn parse(filename: &str) -> Result<(), Vec<String>> {
                 b"speciesReference" => close![SpeciesReference],
                 b"kineticLaw" => close![KineticLaw],
                 b"math" => close![MathTag],
+                b"listOfFunctionDefinitions" => close![ListOfFunctionDefinitions],
+                b"functionDefinition" => close![FunctionDefinition],
                 _ => {}
             },
             // unescape and decode the text event using the reader encoding
@@ -167,17 +176,13 @@ fn parse(filename: &str) -> Result<(), Vec<String>> {
             _ => (), // There are several other `Event`s we do not consider here
         }
     }
-    //for item in container {
+    //for item in &container {
     //println!("{:?}", item);
     //}
     //println!("{:?}", stack);
     //println!("{:?}", current);
 
-    if errors.is_empty() {
-        return Ok(());
-    } else {
-        return Err(errors);
-    }
+    Ok(container)
 }
 
 #[cfg(test)]
@@ -193,7 +198,7 @@ mod tests {
             println!("{}", filename);
             let result = parse(&filename);
             match result {
-                Ok(()) => {}
+                Ok(..) => {}
                 Err(errors) => {
                     println!("{:?}", errors);
                 }
