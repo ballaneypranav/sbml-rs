@@ -24,7 +24,6 @@ fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
     reader.trim_text(true);
     reader.expand_empty_elements(true);
     let mut buf = Vec::new();
-    let mut txt = Vec::new();
 
     let mut stack: Vec<TagIndex> = Vec::new();
     let mut container = Vec::new();
@@ -170,7 +169,10 @@ fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
                 _ => {}
             },
             // unescape and decode the text event using the reader encoding
-            Ok(Event::Text(e)) => txt.push(e.unescape_and_decode(&reader).unwrap()),
+            Ok(Event::Text(e)) => {
+                let s = e.unescape_and_decode(&reader).unwrap();
+                panic!("Unknown text found in {:?}", container[current]);
+            }
             Ok(Event::Eof) => break, // exits the loop when reaching end of file
             Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
             _ => (), // There are several other `Event`s we do not consider here
