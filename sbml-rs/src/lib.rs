@@ -17,7 +17,7 @@ use structs::tag::*;
 use structs::units::*;
 
 #[allow(unused_variables, unused_assignments, dead_code)]
-fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
+pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
     // read file
     //let file = File::open().unwrap();
     let mut reader = Reader::from_file(filename).expect("File error.");
