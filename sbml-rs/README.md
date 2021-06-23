@@ -13,3 +13,7 @@ Supports the following SBML constructs at the moment:
 1. Math
 
 Uses [mathml-rs](https://github.com/ballaneypranav/mathml-rs) for parsing math.
+
+Only tested on the first 24 test cases from the Core Semantic SBML test suite.
+To see it in action, run `cargo test` and make sure the path in the test function 
+corresponds to where you have the models.
