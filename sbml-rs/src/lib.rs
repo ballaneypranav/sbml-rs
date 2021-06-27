@@ -5,16 +5,16 @@ use quick_xml::Reader;
 
 use sbml_macros::{attach, close};
 
-mod structs;
-use structs::compartments::*;
-use structs::function_definitions::*;
-use structs::math::*;
-use structs::model::*;
-use structs::parameters::*;
-use structs::reactions::*;
-use structs::species::*;
-use structs::tag::*;
-use structs::units::*;
+pub mod structs;
+pub use structs::compartments::*;
+pub use structs::function_definitions::*;
+pub use structs::math::*;
+pub use structs::model::*;
+pub use structs::parameters::*;
+pub use structs::reactions::*;
+pub use structs::species::*;
+pub use structs::tag::*;
+pub use structs::units::*;
 
 #[allow(unused_variables, unused_assignments, dead_code)]
 pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
@@ -179,12 +179,13 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
         }
     }
     //for item in &container {
-    //println!("{:?}", item);
+    //print!("{}", item);
     //}
     //println!("{:?}", stack);
     //println!("{:?}", current);
 
     Ok(container)
+    //Ok(Vec::new())
 }
 
 #[cfg(test)]
