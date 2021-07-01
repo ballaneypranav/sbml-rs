@@ -6,7 +6,7 @@ pub struct ListOfCompartments {
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Compartment {
     pub units: Option<String>,
     pub id: Option<String>,

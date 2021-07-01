@@ -6,7 +6,7 @@ pub struct ListOfParameters {
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Parameter {
     pub id: Option<String>,
     pub name: Option<String>,

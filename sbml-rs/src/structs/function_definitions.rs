@@ -6,7 +6,7 @@ pub struct ListOfFunctionDefinitions {
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct FunctionDefinition {
     pub id: Option<String>,
     pub name: Option<String>,

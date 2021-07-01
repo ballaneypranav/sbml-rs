@@ -6,7 +6,7 @@ pub struct ListOfReactions {
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct Reaction {
     pub id: Option<String>,
     pub list_of_reactants: Option<TagIndex>,

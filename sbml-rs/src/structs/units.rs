@@ -6,7 +6,7 @@ pub struct ListOfUnitDefinitions {
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct UnitDefinition {
     pub id: Option<String>,
     pub list_of_units: Option<TagIndex>, // ListOfUnits
@@ -19,7 +19,7 @@ pub struct ListOfUnits {
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Unit {
     pub kind: Option<String>, // UnitSId
     pub exponent: Option<f64>,

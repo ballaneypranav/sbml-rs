@@ -6,7 +6,7 @@ pub struct ListOfSpecies {
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Species {
     pub id: Option<String>,
     pub name: Option<String>,
