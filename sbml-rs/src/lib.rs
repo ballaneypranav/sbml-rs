@@ -195,7 +195,7 @@ mod tests {
     use super::*;
     #[test]
     fn it_works() {
-        for n in 1..100 {
+        for n in 1..2 {
             let filename = format!(
                 "../../testsuites/core-semantic/{:0>5}/{:0>5}-sbml-l3v2.xml",
                 n, n
@@ -203,7 +203,26 @@ mod tests {
             println!("{}", filename);
             let result = parse(&filename);
             match result {
-                Ok(..) => {}
+                Ok(model) => {
+                    println!("List of Species: {:?}", model.list_of_species());
+                    println!();
+                    println!("List of Reactions: {:?}", model.list_of_reactions());
+                    println!();
+                    println!("List of Parameters: {:?}", model.list_of_parameters());
+                    println!();
+                    println!("List of Compartments: {:?}", model.list_of_compartments());
+                    println!();
+                    println!(
+                        "List of FunctionDefinitions: {:?}",
+                        model.list_of_function_definitions()
+                    );
+                    println!();
+                    println!(
+                        "List of UnitDefinitions: {:?}",
+                        model.list_of_unit_definitions()
+                    );
+                    println!();
+                }
                 Err(errors) => {
                     println!("{:?}", errors);
                 }

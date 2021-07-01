@@ -2,9 +2,9 @@ pub type TagIndex = usize;
 use super::compartments::*;
 use super::function_definitions::*;
 use super::math::*;
-use super::model::*;
 use super::parameters::*;
 use super::reactions::*;
+use super::root::*;
 use super::species::*;
 use super::units::*;
 use std::fmt;
@@ -12,7 +12,7 @@ use std::fmt;
 #[allow(dead_code)]
 #[derive(Debug)]
 pub enum Tag {
-    Model(Model),
+    Root(Root),
     ListOfUnitDefinitions(ListOfUnitDefinitions),
     UnitDefinition(UnitDefinition),
     ListOfUnits(ListOfUnits),
@@ -37,7 +37,7 @@ pub enum Tag {
 impl fmt::Display for Tag {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Tag::Model(node) => write!(f, "Model: {}", node),
+            Tag::Root(node) => write!(f, "Root: {}", node),
             //Tag::ListOfUnitDefinitions(node) => write!(f, "LoUnitDef: {}", node),
             //Tag::UnitDefinition(node) => write!(f, "UnitDef: {}", node),
             //Tag::ListOfUnits(node) => write!(f, "LoUnits: {}", node),
