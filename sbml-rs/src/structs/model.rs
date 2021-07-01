@@ -5,14 +5,14 @@ use std::fmt;
 #[derive(Debug, Default)]
 pub struct Model {
     pub name: Option<String>,
-    pub list_of_species: Option<TagIndex>,
-    pub list_of_reactions: Option<TagIndex>,
-    pub list_of_unit_definitions: Option<TagIndex>,
-    pub list_of_compartments: Option<TagIndex>,
-    pub list_of_parameters: Option<TagIndex>,
-    pub list_of_function_definitions: Option<TagIndex>,
+    pub nodes: Vec<Tag>,
 }
 
+impl Model {
+    pub fn new(nodes: Vec<Tag>) -> Self {
+        Model { name: None, nodes }
+    }
+}
 impl fmt::Display for Model {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Model")

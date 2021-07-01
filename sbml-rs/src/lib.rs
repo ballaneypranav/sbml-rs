@@ -12,12 +12,13 @@ pub use structs::math::*;
 pub use structs::model::*;
 pub use structs::parameters::*;
 pub use structs::reactions::*;
+pub use structs::root::*;
 pub use structs::species::*;
 pub use structs::tag::*;
 pub use structs::units::*;
 
 #[allow(unused_variables, unused_assignments, dead_code)]
-pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
+pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
     // read file
     //let file = File::open().unwrap();
     let mut reader = Reader::from_file(filename).expect("File error.");
@@ -26,12 +27,12 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
     let mut buf = Vec::new();
 
     let mut stack: Vec<TagIndex> = Vec::new();
-    let mut container = Vec::new();
-    let mut container_len = 0;
+    let mut nodes = Vec::new();
+    let mut nodes_len = 0;
 
-    let model = Model::default();
-    container.push(Tag::Model(model));
-    container_len += 1;
+    let root = Root::default();
+    nodes.push(Tag::Root(root));
+    nodes_len += 1;
     let mut current = 0;
     stack.push(current);
 
@@ -41,7 +42,7 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
             Ok(Event::Start(ref e)) => {
                 let mut new_tag = None;
                 match e.name() {
-                    b"listOfUnitDefinitions" => attach!(ListOfUnitDefinitions to Model),
+                    b"listOfUnitDefinitions" => attach!(ListOfUnitDefinitions to Root),
                     b"unitDefinition" => attach!(UnitDefinition with
                                                 id as String
                                             to ListOfUnitDefinitions),
@@ -52,7 +53,7 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
                                         scale as i64,
                                         multiplier as f64
                                         to ListOfUnits),
-                    b"listOfCompartments" => attach!(ListOfCompartments to Model),
+                    b"listOfCompartments" => attach!(ListOfCompartments to Root),
                     b"compartment" => attach!(Compartment with
                                                 name as String,
                                                 id as String,
@@ -62,7 +63,7 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
                                                 sbo_term as String,
                                                 size as f64
                                             to ListOfCompartments),
-                    b"listOfParameters" => attach!(ListOfParameters to Model),
+                    b"listOfParameters" => attach!(ListOfParameters to Root),
                     b"parameter" => attach!(Parameter with
                                             id as String,
                                             name as String,
@@ -70,7 +71,7 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
                                             units as String,
                                             constant as bool
                                         to ListOfParameters),
-                    b"listOfSpecies" => attach!(ListOfSpecies to Model),
+                    b"listOfSpecies" => attach!(ListOfSpecies to Root),
                     b"species" => attach!(Species with
                                             id as String,
                                             name as String,
@@ -85,7 +86,7 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
                                             constant as bool,
                                             conversion_factor as String,
                                     to ListOfSpecies),
-                    b"listOfReactions" => attach!(ListOfReactions to Model),
+                    b"listOfReactions" => attach!(ListOfReactions to Root),
                     b"reaction" => attach!(Reaction with
                                              id as String,
                                              reversible as bool,
@@ -108,7 +109,7 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
                         let (math_nodes, returned_reader) = mathml_rs::parse_fragment(reader);
                         reader = returned_reader;
 
-                        match container[current] {
+                        match nodes[current] {
                             Tag::KineticLaw(ref mut parent) => {
                                 let math_tag = MathTag::default()
                                     .with_nodes(math_nodes)
@@ -119,7 +120,7 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
                             _ => {}
                         }
                     }
-                    b"listOfFunctionDefinitions" => attach!(ListOfFunctionDefinitions to Model),
+                    b"listOfFunctionDefinitions" => attach!(ListOfFunctionDefinitions to Root),
                     b"functionDefinition" => {
                         attach!(FunctionDefinition with
                                     id as String,
@@ -139,8 +140,8 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
                 }
                 match new_tag {
                     Some(t) => {
-                        container.push(t);
-                        container_len += 1;
+                        nodes.push(t);
+                        nodes_len += 1;
                     }
                     None => {}
                 }
@@ -171,7 +172,7 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
             // unescape and decode the text event using the reader encoding
             Ok(Event::Text(e)) => {
                 let s = e.unescape_and_decode(&reader).unwrap();
-                panic!("Unknown text found in {:?}", container[current]);
+                panic!("Unknown text found in {:?}", nodes[current]);
             }
             Ok(Event::Eof) => break, // exits the loop when reaching end of file
             Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
@@ -183,9 +184,10 @@ pub fn parse(filename: &str) -> Result<Vec<Tag>, Vec<String>> {
     //}
     //println!("{:?}", stack);
     //println!("{:?}", current);
+    let model = Model::new(nodes);
+    //dbg!(&model);
 
-    Ok(container)
-    //Ok(Vec::new())
+    Ok(model)
 }
 
 #[cfg(test)]

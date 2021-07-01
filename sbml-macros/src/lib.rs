@@ -77,13 +77,13 @@ pub fn attach(input: TokenStream) -> TokenStream {
                 }
             }
             // match the current tag
-            match container[current] {
+            match nodes[current] {
                 // with the parent
                 #(Tag::#parents (ref mut parent) => {
                     // create Tag enum object
                     new_tag = Some(Tag::#tag(#parent_field_ident));
                     // update current pointer (which is really an int)
-                    current = container_len;
+                    current = nodes_len;
                     // update parent pointer of new tag
                     //parent.#parent_field_ident.push(current.clone());
                     #create_stream
@@ -183,7 +183,7 @@ pub fn close(input: TokenStream) -> TokenStream {
     let tag_str = input.tag.to_string();
 
     let tokens = quote! {
-        match container[current] {
+        match nodes[current] {
             Tag::#tag (ref mut tag_field) => {
                 stack.pop();
                 current = stack.last().unwrap().to_owned();
@@ -191,7 +191,7 @@ pub fn close(input: TokenStream) -> TokenStream {
                 //println!("Closing {}", #tag_str);
             }
             _ => {
-                panic!("Attempted to close {} but currently in {:?}", #tag_str, container[current]);
+                panic!("Attempted to close {} but currently in {:?}", #tag_str, nodes[current]);
             }
         }
     };
@@ -209,6 +209,7 @@ impl Parse for CloseInput {
         Ok(CloseInput { tag })
     }
 }
+
 #[cfg(test)]
 mod tests {
     #[test]
