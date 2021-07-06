@@ -22,3 +22,9 @@ pub struct Species {
     pub conversion_factor: Option<String>,
     pub parent: Option<TagIndex>,
 }
+
+impl Species {
+    pub fn id(&self) -> String {
+        self.id.to_owned().unwrap()
+    }
+}

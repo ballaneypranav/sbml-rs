@@ -2,7 +2,7 @@ use super::tag::TagIndex;
 pub use mathml_rs::MathNode;
 use std::fmt;
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct MathTag {
     pub nodes: Vec<MathNode>,
     pub parent: Option<TagIndex>,

@@ -115,7 +115,7 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                                     .with_nodes(math_nodes)
                                     .with_parent(current);
                                 new_tag = Some(Tag::MathTag(math_tag));
-                                parent.math = Some(current.clone());
+                                parent.math = Some(nodes_len.clone());
                             }
                             _ => {}
                         }
@@ -131,10 +131,6 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                     b"sbml" => {}
                     b"model" => {}
                     _ => {
-                        //errors.push(format!(
-                        //"Tag not parsed: {}",
-                        //str::from_utf8(e.name()).unwrap()
-                        //));
                         panic!("Tag not parsed: {}", str::from_utf8(e.name()).unwrap());
                     }
                 }
@@ -203,26 +199,7 @@ mod tests {
             println!("{}", filename);
             let result = parse(&filename);
             match result {
-                Ok(model) => {
-                    println!("List of Species: {:?}", model.list_of_species());
-                    println!();
-                    println!("List of Reactions: {:?}", model.list_of_reactions());
-                    println!();
-                    println!("List of Parameters: {:?}", model.list_of_parameters());
-                    println!();
-                    println!("List of Compartments: {:?}", model.list_of_compartments());
-                    println!();
-                    println!(
-                        "List of FunctionDefinitions: {:?}",
-                        model.list_of_function_definitions()
-                    );
-                    println!();
-                    println!(
-                        "List of UnitDefinitions: {:?}",
-                        model.list_of_unit_definitions()
-                    );
-                    println!();
-                }
+                Ok(..) => {}
                 Err(errors) => {
                     println!("{:?}", errors);
                 }
