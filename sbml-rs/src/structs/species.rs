@@ -1,3 +1,4 @@
+use super::model::Model;
 use super::tag::TagIndex;
 
 #[derive(Debug, Default)]
@@ -26,5 +27,16 @@ pub struct Species {
 impl Species {
     pub fn id(&self) -> String {
         self.id.to_owned().unwrap()
+    }
+
+    pub fn compartment_size(&self, model: &Model) -> Result<f64, String> {
+        let compartments = model.compartments();
+        for compartment in compartments {
+            let compartment_id = self.compartment.as_ref().unwrap().to_owned();
+            if compartment_id == compartment.id.unwrap() {
+                return Ok(compartment.size.unwrap());
+            }
+        }
+        Err("Not found".to_string())
     }
 }

@@ -28,6 +28,8 @@ pub enum Tag {
     ListOfReactants(ListOfReactants),
     ListOfProducts(ListOfProducts),
     SpeciesReference(SpeciesReference),
+    ListOfModifiers(ListOfModifiers),
+    ModifierSpeciesReference(ModifierSpeciesReference),
     KineticLaw(KineticLaw),
     MathTag(MathTag),
     ListOfFunctionDefinitions(ListOfFunctionDefinitions),

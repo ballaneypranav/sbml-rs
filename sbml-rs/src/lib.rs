@@ -104,6 +104,13 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                                                     sbo_term as String,
                                                     stoichiometry as f64,
                                         to ListOfReactants | ListOfProducts),
+                    b"listOfModifiers" => attach!(ListOfModifiers to Reaction),
+                    b"modifierSpeciesReference" => attach!(ModifierSpeciesReference with
+                                                    id as String,
+                                                    name as String,
+                                                    species as String,
+                                                    sbo_term as String,
+                                        to ListOfModifiers),
                     b"kineticLaw" => attach!(KineticLaw to Reaction),
                     b"math" => {
                         let (math_nodes, returned_reader) = mathml_rs::parse_fragment(reader);
@@ -124,6 +131,7 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                                 new_tag = Some(Tag::MathTag(math_tag));
                                 parent.math = Some(nodes_len.clone());
                             }
+
                             _ => {}
                         }
                     }
@@ -166,6 +174,8 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                 b"listOfReactants" => close![ListOfReactants],
                 b"listOfProducts" => close![ListOfProducts],
                 b"speciesReference" => close![SpeciesReference],
+                b"listOfModifiers" => close![ListOfModifiers],
+                b"modifierSpeciesReference" => close![ModifierSpeciesReference],
                 b"kineticLaw" => close![KineticLaw],
                 b"math" => close![MathTag],
                 b"listOfFunctionDefinitions" => close![ListOfFunctionDefinitions],

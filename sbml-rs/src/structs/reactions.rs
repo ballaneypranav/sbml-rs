@@ -14,6 +14,7 @@ pub struct Reaction {
     pub id: Option<String>,
     pub list_of_reactants: Option<TagIndex>,
     pub list_of_products: Option<TagIndex>,
+    pub list_of_modifiers: Option<TagIndex>,
     pub reversible: Option<bool>,
     pub kinetic_law: Option<TagIndex>,
     pub compartment: Option<String>,
@@ -102,6 +103,21 @@ pub struct SpeciesReference {
     pub constant: Option<bool>,
     pub sbo_term: Option<String>,
     pub stoichiometry: Option<f64>,
+    pub parent: Option<TagIndex>,
+}
+
+#[derive(Debug, Default)]
+pub struct ListOfModifiers {
+    pub modifier_species_references: Vec<TagIndex>,
+    pub parent: Option<TagIndex>,
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct ModifierSpeciesReference {
+    pub id: Option<String>,
+    pub name: Option<String>,
+    pub species: Option<String>,
+    pub sbo_term: Option<String>,
     pub parent: Option<TagIndex>,
 }
 
