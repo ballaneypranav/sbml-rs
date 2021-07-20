@@ -1,6 +1,6 @@
 use crate::{
-    Compartment, FunctionDefinition, MathTag, Parameter, Reaction, Species, SpeciesReference,
-    SpeciesStatus, Tag, UnitDefinition,
+    Compartment, FunctionDefinition, MathNode, MathTag, Parameter, Reaction, Species,
+    SpeciesReference, SpeciesStatus, Tag, UnitDefinition,
 };
 use std::collections::HashMap;
 use std::fmt;
@@ -99,7 +99,11 @@ impl Model {
                             // According to the spec, "setting both is an error"
                             if let Some(initial_amount) = sp.initial_amount {
                                 if let None = sp.initial_concentration {
-                                    hm.insert(id, initial_amount);
+                                    // If amount is set, the get concentration
+                                    let compartment = sp.compartment.as_ref().unwrap();
+                                    let compartment_size = hm.get(compartment).unwrap();
+                                    let concentration = initial_amount / compartment_size;
+                                    hm.insert(id, concentration);
                                 }
                             } else if let Some(initial_concentration) = sp.initial_concentration {
                                 hm.insert(id, initial_concentration);
@@ -130,6 +134,16 @@ impl Model {
         }
 
         hm
+    }
+
+    pub fn function_definition_tags(&self) -> HashMap<String, Vec<MathNode>> {
+        let mut tags = HashMap::new();
+        for function_definition in self.function_definitions() {
+            let id = function_definition.id.as_ref().unwrap().to_owned();
+            let math_tag = function_definition.math_tag(&self).unwrap();
+            tags.insert(id, math_tag.nodes);
+        }
+        tags
     }
 
     pub fn all_reactants(&self) -> HashMap<String, Vec<SpeciesReference>> {

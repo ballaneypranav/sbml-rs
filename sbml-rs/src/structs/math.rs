@@ -1,5 +1,7 @@
 use super::tag::TagIndex;
+use mathml_rs::evaluate_node;
 pub use mathml_rs::MathNode;
+use std::collections::HashMap;
 use std::fmt;
 
 #[derive(Clone, Debug, Default)]
@@ -27,5 +29,13 @@ impl MathTag {
     pub fn with_parent(mut self, parent: TagIndex) -> Self {
         self.parent = Some(parent);
         self
+    }
+
+    pub fn evaluate(
+        &self,
+        assignments: &HashMap<String, f64>,
+        functions: &HashMap<String, Vec<MathNode>>,
+    ) -> Result<f64, String> {
+        Ok(evaluate_node(&self.nodes, 0, assignments, functions)?)
     }
 }

@@ -117,6 +117,13 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                                 new_tag = Some(Tag::MathTag(math_tag));
                                 parent.math = Some(nodes_len.clone());
                             }
+                            Tag::FunctionDefinition(ref mut parent) => {
+                                let math_tag = MathTag::default()
+                                    .with_nodes(math_nodes)
+                                    .with_parent(current);
+                                new_tag = Some(Tag::MathTag(math_tag));
+                                parent.math = Some(nodes_len.clone());
+                            }
                             _ => {}
                         }
                     }
@@ -175,11 +182,7 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
             _ => (), // There are several other `Event`s we do not consider here
         }
     }
-    //for item in &container {
-    //print!("{}", item);
-    //}
-    //println!("{:?}", stack);
-    //println!("{:?}", current);
+
     let model = Model::new(nodes);
     //dbg!(&model);
 
@@ -191,15 +194,20 @@ mod tests {
     use super::*;
     #[test]
     fn it_works() {
-        for n in 1..2 {
+        for n in 25..26 {
             let filename = format!(
-                "../../testsuites/core-semantic/{:0>5}/{:0>5}-sbml-l3v2.xml",
+                "../../testsuites/function-definition-test-suite/{:0>5}/{:0>5}-sbml-l3v2.xml",
                 n, n
             );
             println!("{}", filename);
             let result = parse(&filename);
             match result {
-                Ok(..) => {}
+                Ok(model) => {
+                    let function_definitions = model.function_definitions();
+                    for function_definition in function_definitions {
+                        println!("{}", function_definition.math_tag(&model).unwrap());
+                    }
+                }
                 Err(errors) => {
                     println!("{:?}", errors);
                 }
