@@ -7,6 +7,7 @@ use super::math::*;
 use super::parameters::*;
 use super::reactions::*;
 use super::root::*;
+use super::rules::*;
 use super::species::*;
 use super::units::*;
 use std::fmt;
@@ -40,6 +41,8 @@ pub enum Tag {
     FunctionDefinition(FunctionDefinition),
     ListOfInitialAssignments(ListOfInitialAssignments),
     InitialAssignment(InitialAssignment),
+    ListOfRules(ListOfRules),
+    AssignmentRule(AssignmentRule),
 }
 
 impl fmt::Display for Tag {

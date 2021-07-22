@@ -34,15 +34,10 @@ impl FunctionDefinition {
     pub fn evaluate(
         &self,
         model: &Model,
-        argument_values: &Vec<f64>,
+        argument_values: &[f64],
         functions: &HashMap<String, Vec<MathNode>>,
     ) -> Result<f64, String> {
         let math_tag = self.math_tag(model).unwrap();
-        Ok(evaluate_lambda(
-            &math_tag.nodes,
-            0,
-            &argument_values,
-            functions,
-        )?)
+        evaluate_lambda(&math_tag.nodes, 0, &argument_values, functions)
     }
 }

@@ -36,6 +36,6 @@ impl MathTag {
         assignments: &HashMap<String, f64>,
         functions: &HashMap<String, Vec<MathNode>>,
     ) -> Result<f64, String> {
-        Ok(evaluate_node(&self.nodes, 0, assignments, functions)?)
+        evaluate_node(&self.nodes, 0, assignments, functions)
     }
 }

@@ -3,7 +3,7 @@ use std::str;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
-use sbml_macros::{attach, close};
+use sbml_macros::{attach, attach_math, close};
 
 pub mod structs;
 pub use structs::compartments::*;
@@ -14,6 +14,7 @@ pub use structs::model::*;
 pub use structs::parameters::*;
 pub use structs::reactions::*;
 pub use structs::root::*;
+pub use structs::rules::*;
 pub use structs::species::*;
 pub use structs::tag::*;
 pub use structs::units::*;
@@ -124,31 +125,12 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                         let (math_nodes, returned_reader) = mathml_rs::parse_fragment(reader);
                         reader = returned_reader;
 
-                        match nodes[current] {
-                            Tag::KineticLaw(ref mut parent) => {
-                                let math_tag = MathTag::default()
-                                    .with_nodes(math_nodes)
-                                    .with_parent(current);
-                                new_tag = Some(Tag::MathTag(math_tag));
-                                parent.math = Some(nodes_len.clone());
-                            }
-                            Tag::FunctionDefinition(ref mut parent) => {
-                                let math_tag = MathTag::default()
-                                    .with_nodes(math_nodes)
-                                    .with_parent(current);
-                                new_tag = Some(Tag::MathTag(math_tag));
-                                parent.math = Some(nodes_len.clone());
-                            }
-                            Tag::InitialAssignment(ref mut parent) => {
-                                let math_tag = MathTag::default()
-                                    .with_nodes(math_nodes)
-                                    .with_parent(current);
-                                new_tag = Some(Tag::MathTag(math_tag));
-                                parent.math = Some(nodes_len.clone());
-                            }
-
-                            _ => {}
-                        }
+                        attach_math![
+                            KineticLaw,
+                            FunctionDefinition,
+                            InitialAssignment,
+                            AssignmentRule
+                        ];
                     }
                     b"listOfFunctionDefinitions" => attach!(ListOfFunctionDefinitions to Root),
                     b"functionDefinition" => {
@@ -166,18 +148,23 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                                     sbo_term as String
                                 to ListOfInitialAssignments)
                     }
+                    b"listOfRules" => attach!(ListOfRules to Root),
+                    b"assignmentRule" => {
+                        attach!(AssignmentRule with
+                                    metaid as String,
+                                    variable as String,
+                                    sbo_term as String
+                                to ListOfRules)
+                    }
                     b"sbml" => {}
                     b"model" => {}
                     _ => {
                         panic!("Tag not parsed: {}", str::from_utf8(e.name()).unwrap());
                     }
                 }
-                match new_tag {
-                    Some(t) => {
-                        nodes.push(t);
-                        nodes_len += 1;
-                    }
-                    None => {}
+                if let Some(t) = new_tag {
+                    nodes.push(t);
+                    nodes_len += 1;
                 }
             }
             // for each closing tag

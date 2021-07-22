@@ -25,8 +25,8 @@ pub fn attach(input: TokenStream) -> TokenStream {
     let create_stream;
     if parents[0].to_string().starts_with("ListOf") {
         // make plural
-        if !parent_field.ends_with("s") {
-            parent_field.push_str("s");
+        if !parent_field.ends_with('s') {
+            parent_field.push('s');
         }
         // identifier for this object in it's parent (the new object created for this tag)
         parent_field_ident = Ident::new(&parent_field, Span::call_site());
@@ -47,7 +47,7 @@ pub fn attach(input: TokenStream) -> TokenStream {
     // also need strings for matching tokens
     let mut attr_str: Vec<String> = Vec::new();
     for ident in &attr_idents {
-        attr_str.push(String::from(ident.to_string().to_case(Case::Camel)));
+        attr_str.push(ident.to_string().to_case(Case::Camel));
     }
 
     let tokens = quote! {
@@ -146,8 +146,7 @@ impl Parse for OpenInput {
         let _to = input.parse::<kw::to>()?;
 
         // parse parent
-        let mut parents = Vec::new();
-        parents.push(syn::Ident::parse(input)?);
+        let mut parents = vec![syn::Ident::parse(input)?];
 
         // see if there are multiple parents
         loop {
@@ -174,6 +173,42 @@ impl Parse for OpenInput {
         })
     }
 }
+
+#[proc_macro]
+pub fn attach_math(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as MathInput);
+    let parents = &input.parents;
+
+    let tokens = quote! {
+        match nodes[current] {
+            #(Tag::#parents(ref mut parent) => {
+                let math_tag = MathTag::default()
+                    .with_nodes(math_nodes)
+                    .with_parent(current);
+                new_tag = Some(Tag::MathTag(math_tag));
+                parent.math = Some(nodes_len.clone());
+            })*
+            _ => {}
+        }
+    };
+    tokens.into()
+}
+
+#[derive(Debug)]
+struct MathInput {
+    parents: Vec<Ident>,
+}
+
+impl Parse for MathInput {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let parsed_input =
+            syn::punctuated::Punctuated::<Ident, Token![,]>::parse_terminated(input)?;
+        let parents: Vec<Ident> = parsed_input.into_iter().collect();
+
+        Ok(MathInput { parents })
+    }
+}
+
 #[proc_macro]
 pub fn close(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as CloseInput);

@@ -110,7 +110,7 @@ impl Model {
                             // initial_concentration
                             // According to the spec, "setting both is an error"
                             if let Some(initial_amount) = sp.initial_amount {
-                                if let None = sp.initial_concentration {
+                                if sp.initial_concentration.is_none() {
                                     // If amount is set, the get concentration
                                     let compartment = sp.compartment.as_ref().unwrap();
                                     let compartment_size = hm.get(compartment).unwrap();

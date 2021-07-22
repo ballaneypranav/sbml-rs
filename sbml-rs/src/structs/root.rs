@@ -11,6 +11,7 @@ pub struct Root {
     pub list_of_parameters: Option<TagIndex>,
     pub list_of_function_definitions: Option<TagIndex>,
     pub list_of_initial_assignments: Option<TagIndex>,
+    pub list_of_rules: Option<TagIndex>,
 }
 
 impl fmt::Display for Root {
