@@ -2,6 +2,7 @@ use super::math::MathTag;
 use super::model::Model;
 use super::tag::Tag;
 use super::tag::TagIndex;
+use std::collections::HashMap;
 
 #[derive(Debug, Default)]
 pub struct ListOfReactions {
@@ -81,6 +82,16 @@ impl Reaction {
         }
         result
     }
+
+    pub fn local_parameters(&self, model: &Model) -> HashMap<String, f64> {
+        let mut hm = HashMap::new();
+        if let Some(kinetic_law_idx) = self.kinetic_law {
+            if let Tag::KineticLaw(kinetic_law) = &model.nodes[kinetic_law_idx] {
+                hm = kinetic_law.local_parameters(model);
+            }
+        }
+        hm
+    }
 }
 
 #[derive(Debug, Default)]
@@ -124,6 +135,42 @@ pub struct ModifierSpeciesReference {
 #[derive(Debug, Default)]
 pub struct KineticLaw {
     pub math: Option<TagIndex>,
+    pub list_of_local_parameters: Option<TagIndex>,
+    pub parent: Option<TagIndex>,
+}
+
+impl KineticLaw {
+    pub fn local_parameters(&self, model: &Model) -> HashMap<String, f64> {
+        let mut hm = HashMap::<String, f64>::new();
+        if let Some(idx) = self.list_of_local_parameters {
+            if let Tag::ListOfLocalParameters(list_of_local_parameters) = &model.nodes[idx] {
+                for param_idx in &list_of_local_parameters.local_parameters {
+                    if let Tag::LocalParameter(param) = &model.nodes[param_idx.to_owned()] {
+                        if let Some(id) = param.id.to_owned() {
+                            if let Some(value) = param.value {
+                                hm.insert(id, value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        hm
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct ListOfLocalParameters {
+    pub local_parameters: Vec<TagIndex>,
+    pub parent: Option<TagIndex>,
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct LocalParameter {
+    pub id: Option<String>,
+    pub value: Option<f64>,
+    pub units: Option<String>,
+    pub sbo_term: Option<String>,
     pub parent: Option<TagIndex>,
 }
 

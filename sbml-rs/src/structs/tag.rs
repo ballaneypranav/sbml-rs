@@ -1,4 +1,5 @@
 pub type TagIndex = usize;
+
 use super::compartments::*;
 use super::function_definitions::*;
 use super::initial_assignments::*;
@@ -31,6 +32,8 @@ pub enum Tag {
     SpeciesReference(SpeciesReference),
     ListOfModifiers(ListOfModifiers),
     ModifierSpeciesReference(ModifierSpeciesReference),
+    ListOfLocalParameters(ListOfLocalParameters),
+    LocalParameter(LocalParameter),
     KineticLaw(KineticLaw),
     MathTag(MathTag),
     ListOfFunctionDefinitions(ListOfFunctionDefinitions),

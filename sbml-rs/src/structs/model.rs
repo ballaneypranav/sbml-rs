@@ -229,6 +229,16 @@ impl Model {
         result
     }
 
+    pub fn local_parameters(&self) -> HashMap<String, HashMap<String, f64>> {
+        let mut hm: HashMap<String, HashMap<String, f64>> = HashMap::new();
+        for reaction in self.reactions() {
+            let rxn_id = reaction.id.as_ref().unwrap().to_owned();
+            let local_parameters = reaction.local_parameters(self);
+            hm.insert(rxn_id, local_parameters);
+        }
+        hm
+    }
+
     pub fn reaction_matrix(&self) -> HashMap<(String, String), SpeciesStatus> {
         let mut rxn_matrix: HashMap<(String, String), SpeciesStatus> = HashMap::new();
 

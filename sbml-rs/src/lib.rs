@@ -113,6 +113,13 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                                                     sbo_term as String,
                                         to ListOfModifiers),
                     b"kineticLaw" => attach!(KineticLaw to Reaction),
+                    b"listOfLocalParameters" => attach!(ListOfLocalParameters to KineticLaw),
+                    b"localParameter" => attach!(LocalParameter with
+                                            id as String,
+                                            value as f64,
+                                            units as String,
+                                            sbo_term as String,
+                                        to ListOfLocalParameters),
                     b"math" => {
                         let (math_nodes, returned_reader) = mathml_rs::parse_fragment(reader);
                         reader = returned_reader;
@@ -193,6 +200,8 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                 b"listOfModifiers" => close![ListOfModifiers],
                 b"modifierSpeciesReference" => close![ModifierSpeciesReference],
                 b"kineticLaw" => close![KineticLaw],
+                b"listOfLocalParameters" => close![ListOfLocalParameters],
+                b"localParameter" => close![LocalParameter],
                 b"math" => close![MathTag],
                 b"listOfFunctionDefinitions" => close![ListOfFunctionDefinitions],
                 b"functionDefinition" => close![FunctionDefinition],
