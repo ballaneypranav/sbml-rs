@@ -1,3 +1,5 @@
+use mathml_rs::evaluate_node;
+
 use crate::{
     Compartment, FunctionDefinition, MathNode, MathTag, Parameter, Reaction, Species,
     SpeciesReference, SpeciesStatus, Tag, UnitDefinition,
@@ -60,6 +62,16 @@ impl Model {
         FunctionDefinition,
         function_definitions
     );
+
+    pub fn function_definition_tags(&self) -> HashMap<String, Vec<MathNode>> {
+        let mut tags = HashMap::new();
+        for function_definition in self.function_definitions() {
+            let id = function_definition.id.as_ref().unwrap().to_owned();
+            let math_tag = function_definition.math_tag(&self).unwrap();
+            tags.insert(id, math_tag.nodes);
+        }
+        tags
+    }
 
     // Creates a HashMap from Parameters, Species and Compartments
     pub fn assignments(&self) -> HashMap<String, f64> {
@@ -133,17 +145,33 @@ impl Model {
             }
         }
 
-        hm
-    }
+        let function_definitions = self.function_definition_tags();
 
-    pub fn function_definition_tags(&self) -> HashMap<String, Vec<MathNode>> {
-        let mut tags = HashMap::new();
-        for function_definition in self.function_definitions() {
-            let id = function_definition.id.as_ref().unwrap().to_owned();
-            let math_tag = function_definition.math_tag(&self).unwrap();
-            tags.insert(id, math_tag.nodes);
+        // Initial Assignments
+        let mut lo_init_assignment_idx = None;
+        if let Tag::Root(root) = &self.nodes[0] {
+            lo_init_assignment_idx = root.list_of_initial_assignments;
         }
-        tags
+        if let Some(idx) = lo_init_assignment_idx {
+            if let Tag::ListOfInitialAssignments(list_of_initial_assignments) = &self.nodes[idx] {
+                for init_assignment_idx in &list_of_initial_assignments.initial_assignments {
+                    if let Tag::InitialAssignment(init_assignment) =
+                        &self.nodes[init_assignment_idx.to_owned()]
+                    {
+                        if let Some(symbol) = init_assignment.symbol.to_owned() {
+                            if let Some(math_tag) = init_assignment.math_tag(self) {
+                                let value =
+                                    evaluate_node(&math_tag.nodes, 0, &hm, &function_definitions)
+                                        .expect("Evaluation failed for initial assignment.");
+                                hm.insert(symbol, value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        hm
     }
 
     pub fn all_reactants(&self) -> HashMap<String, Vec<SpeciesReference>> {

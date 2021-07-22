@@ -1,6 +1,7 @@
 pub type TagIndex = usize;
 use super::compartments::*;
 use super::function_definitions::*;
+use super::initial_assignments::*;
 use super::math::*;
 use super::parameters::*;
 use super::reactions::*;
@@ -34,6 +35,8 @@ pub enum Tag {
     MathTag(MathTag),
     ListOfFunctionDefinitions(ListOfFunctionDefinitions),
     FunctionDefinition(FunctionDefinition),
+    ListOfInitialAssignments(ListOfInitialAssignments),
+    InitialAssignment(InitialAssignment),
 }
 
 impl fmt::Display for Tag {

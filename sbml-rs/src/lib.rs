@@ -8,6 +8,7 @@ use sbml_macros::{attach, close};
 pub mod structs;
 pub use structs::compartments::*;
 pub use structs::function_definitions::*;
+pub use structs::initial_assignments::*;
 pub use structs::math::*;
 pub use structs::model::*;
 pub use structs::parameters::*;
@@ -131,6 +132,13 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                                 new_tag = Some(Tag::MathTag(math_tag));
                                 parent.math = Some(nodes_len.clone());
                             }
+                            Tag::InitialAssignment(ref mut parent) => {
+                                let math_tag = MathTag::default()
+                                    .with_nodes(math_nodes)
+                                    .with_parent(current);
+                                new_tag = Some(Tag::MathTag(math_tag));
+                                parent.math = Some(nodes_len.clone());
+                            }
 
                             _ => {}
                         }
@@ -142,6 +150,14 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                                     name as String,
                                     sbo_term as String
                                 to ListOfFunctionDefinitions)
+                    }
+                    b"listOfInitialAssignments" => attach!(ListOfInitialAssignments to Root),
+                    b"initialAssignment" => {
+                        attach!(InitialAssignment with
+                                    id as String,
+                                    symbol as String,
+                                    sbo_term as String
+                                to ListOfInitialAssignments)
                     }
                     b"sbml" => {}
                     b"model" => {}
@@ -180,6 +196,8 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                 b"math" => close![MathTag],
                 b"listOfFunctionDefinitions" => close![ListOfFunctionDefinitions],
                 b"functionDefinition" => close![FunctionDefinition],
+                b"listOfInitialAssignments" => close![ListOfInitialAssignments],
+                b"initialAssignment" => close![InitialAssignment],
                 _ => {}
             },
             // unescape and decode the text event using the reader encoding
