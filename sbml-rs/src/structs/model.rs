@@ -1,8 +1,8 @@
 use mathml_rs::evaluate_node;
 
 use crate::{
-    Compartment, FunctionDefinition, MathNode, MathTag, Parameter, Reaction, Species,
-    SpeciesReference, SpeciesStatus, Tag, UnitDefinition,
+    AssignmentRule, Compartment, FunctionDefinition, MathNode, MathTag, Parameter, Reaction,
+    Species, SpeciesReference, SpeciesStatus, Tag, UnitDefinition,
 };
 use std::collections::HashMap;
 use std::fmt;
@@ -62,13 +62,24 @@ impl Model {
         FunctionDefinition,
         function_definitions
     );
+    objects_from_list!(ListOfRules, list_of_rules, AssignmentRule, assignment_rules);
 
-    pub fn function_definition_tags(&self) -> HashMap<String, Vec<MathNode>> {
+    pub fn function_definition_math(&self) -> HashMap<String, Vec<MathNode>> {
         let mut tags = HashMap::new();
         for function_definition in self.function_definitions() {
             let id = function_definition.id.as_ref().unwrap().to_owned();
             let math_tag = function_definition.math_tag(&self).unwrap();
             tags.insert(id, math_tag.nodes);
+        }
+        tags
+    }
+
+    pub fn assignment_rule_math(&self) -> HashMap<String, Vec<MathNode>> {
+        let mut tags = HashMap::new();
+        for assignment_rule in self.assignment_rules() {
+            let variable = assignment_rule.variable.as_ref().unwrap().to_owned();
+            let math_tag = assignment_rule.math_tag(&self).unwrap();
+            tags.insert(variable, math_tag.nodes);
         }
         tags
     }
@@ -145,7 +156,7 @@ impl Model {
             }
         }
 
-        let function_definitions = self.function_definition_tags();
+        let function_definitions = self.function_definition_math();
 
         // Initial Assignments
         let mut lo_init_assignment_idx = None;

@@ -194,6 +194,8 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                 b"functionDefinition" => close![FunctionDefinition],
                 b"listOfInitialAssignments" => close![ListOfInitialAssignments],
                 b"initialAssignment" => close![InitialAssignment],
+                b"listOfRules" => close![ListOfRules],
+                b"assignmentRule" => close![AssignmentRule],
                 _ => {}
             },
             // unescape and decode the text event using the reader encoding
