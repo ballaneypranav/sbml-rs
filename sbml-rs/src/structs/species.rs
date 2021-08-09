@@ -34,7 +34,9 @@ impl Species {
         for compartment in compartments {
             let compartment_id = self.compartment.as_ref().unwrap().to_owned();
             if compartment_id == compartment.id.unwrap() {
-                return Ok(compartment.size.unwrap());
+                if let Some(compartment_size) = compartment.size {
+                    return Ok(compartment_size);
+                }
             }
         }
         Err("Not found".to_string())

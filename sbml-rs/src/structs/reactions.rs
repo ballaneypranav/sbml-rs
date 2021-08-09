@@ -61,6 +61,24 @@ impl Reaction {
         result
     }
 
+    pub fn modifiers(&self, model: &Model) -> Vec<String> {
+        let mut result: Vec<String> = Vec::new();
+        if let Some(lo_modifier_idx) = self.list_of_modifiers {
+            if let Tag::ListOfModifiers(list_of_modifiers) = &model.nodes[lo_modifier_idx] {
+                for modifier_idx in &list_of_modifiers.modifier_species_references {
+                    if let Tag::ModifierSpeciesReference(modifier) =
+                        &model.nodes[modifier_idx.to_owned()]
+                    {
+                        result.push(modifier.species.clone().expect(
+                            "Species attribute is mandatory for ModifierSpeciesReferences.",
+                        ));
+                    }
+                }
+            }
+        }
+        result
+    }
+
     pub fn product_ids(&self, model: &Model) -> Vec<String> {
         let products = &self.products(&model);
         products
@@ -83,14 +101,24 @@ impl Reaction {
         result
     }
 
-    pub fn local_parameters(&self, model: &Model) -> HashMap<String, f64> {
-        let mut hm = HashMap::new();
+    pub fn local_parameters(&self, model: &Model) -> Vec<LocalParameter> {
+        let mut result: Vec<LocalParameter> = Vec::new();
         if let Some(kinetic_law_idx) = self.kinetic_law {
             if let Tag::KineticLaw(kinetic_law) = &model.nodes[kinetic_law_idx] {
-                hm = kinetic_law.local_parameters(model);
+                result = kinetic_law.local_parameters(model);
             }
         }
-        hm
+        result
+    }
+
+    pub fn local_parameter_values(&self, model: &Model) -> HashMap<String, f64> {
+        let mut result = HashMap::new();
+        if let Some(kinetic_law_idx) = self.kinetic_law {
+            if let Tag::KineticLaw(kinetic_law) = &model.nodes[kinetic_law_idx] {
+                result = kinetic_law.local_parameter_values(model);
+            }
+        }
+        result
     }
 }
 
@@ -140,18 +168,26 @@ pub struct KineticLaw {
 }
 
 impl KineticLaw {
-    pub fn local_parameters(&self, model: &Model) -> HashMap<String, f64> {
-        let mut hm = HashMap::<String, f64>::new();
+    pub fn local_parameters(&self, model: &Model) -> Vec<LocalParameter> {
+        let mut result = Vec::<LocalParameter>::new();
         if let Some(idx) = self.list_of_local_parameters {
             if let Tag::ListOfLocalParameters(list_of_local_parameters) = &model.nodes[idx] {
                 for param_idx in &list_of_local_parameters.local_parameters {
                     if let Tag::LocalParameter(param) = &model.nodes[param_idx.to_owned()] {
-                        if let Some(id) = param.id.to_owned() {
-                            if let Some(value) = param.value {
-                                hm.insert(id, value);
-                            }
-                        }
+                        result.push(param.clone());
                     }
+                }
+            }
+        }
+        result
+    }
+
+    pub fn local_parameter_values(&self, model: &Model) -> HashMap<String, f64> {
+        let mut hm = HashMap::<String, f64>::new();
+        for param in self.local_parameters(model) {
+            if let Some(id) = param.id.to_owned() {
+                if let Some(value) = param.value {
+                    hm.insert(id, value);
                 }
             }
         }

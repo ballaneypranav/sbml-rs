@@ -8,6 +8,7 @@ pub struct ListOfRules {
 
 #[derive(Debug, Default, Clone)]
 pub struct AssignmentRule {
+    pub id: Option<String>,
     pub metaid: Option<String>,
     pub variable: Option<String>,
     pub sbo_term: Option<String>,

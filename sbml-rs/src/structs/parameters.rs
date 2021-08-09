@@ -12,6 +12,7 @@ pub struct Parameter {
     pub name: Option<String>,
     pub value: Option<f64>,
     pub units: Option<String>,
+    pub sbo_term: Option<String>,
     pub constant: Option<bool>,
     pub parent: Option<TagIndex>,
 }

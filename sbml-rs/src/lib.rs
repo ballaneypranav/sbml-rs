@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::str;
 
 use quick_xml::events::Event;
@@ -31,6 +32,7 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
     let mut stack: Vec<TagIndex> = Vec::new();
     let mut nodes = Vec::new();
     let mut nodes_len = 0;
+    let mut model_attrs = HashMap::new();
 
     let root = Root::default();
     nodes.push(Tag::Root(root));
@@ -44,6 +46,22 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
             Ok(Event::Start(ref e)) => {
                 let mut new_tag = None;
                 match e.name() {
+                    b"sbml" => {}
+                    b"model" => {
+                        let attributes = e.attributes().map(|a| a.unwrap()).collect::<Vec<_>>();
+                        for attribute in attributes {
+                            let key = str::from_utf8(attribute.key).unwrap();
+                            let value = attribute.unescape_and_decode_value(&reader).unwrap();
+                            match key {
+                                "id" | "substanceUnits" | "timeUnits" | "extentUnits"
+                                | "volumeUnits" | "areaUnits" | "lengthUnits"
+                                | "conversionFactor" | "metaid" | "name" => {
+                                    model_attrs.insert(key.to_string(), value);
+                                }
+                                _ => panic!("Attribute {} not parsed for model.", key),
+                            }
+                        }
+                    }
                     b"listOfUnitDefinitions" => attach!(ListOfUnitDefinitions to Root),
                     b"unitDefinition" => attach!(UnitDefinition with
                                                 id as String
@@ -71,6 +89,7 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                                             name as String,
                                             value as f64,
                                             units as String,
+                                            sbo_term as String,
                                             constant as bool
                                         to ListOfParameters),
                     b"listOfSpecies" => attach!(ListOfSpecies to Root),
@@ -151,13 +170,12 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                     b"listOfRules" => attach!(ListOfRules to Root),
                     b"assignmentRule" => {
                         attach!(AssignmentRule with
+                                    id as String,
                                     metaid as String,
                                     variable as String,
                                     sbo_term as String
                                 to ListOfRules)
                     }
-                    b"sbml" => {}
-                    b"model" => {}
                     _ => {
                         panic!("Tag not parsed: {}", str::from_utf8(e.name()).unwrap());
                     }
@@ -209,8 +227,7 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
         }
     }
 
-    let model = Model::new(nodes);
-    //dbg!(&model);
+    let model = Model::new(nodes, model_attrs);
 
     Ok(model)
 }
