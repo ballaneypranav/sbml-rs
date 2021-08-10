@@ -43,6 +43,7 @@ pub enum Tag {
     InitialAssignment(InitialAssignment),
     ListOfRules(ListOfRules),
     AssignmentRule(AssignmentRule),
+    RateRule(RateRule),
 }
 
 impl fmt::Display for Tag {

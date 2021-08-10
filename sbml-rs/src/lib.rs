@@ -148,7 +148,8 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                             KineticLaw,
                             FunctionDefinition,
                             InitialAssignment,
-                            AssignmentRule
+                            AssignmentRule,
+                            RateRule,
                         ];
                     }
                     b"listOfFunctionDefinitions" => attach!(ListOfFunctionDefinitions to Root),
@@ -170,6 +171,14 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                     b"listOfRules" => attach!(ListOfRules to Root),
                     b"assignmentRule" => {
                         attach!(AssignmentRule with
+                                    id as String,
+                                    metaid as String,
+                                    variable as String,
+                                    sbo_term as String
+                                to ListOfRules)
+                    }
+                    b"rateRule" => {
+                        attach!(RateRule with
                                     id as String,
                                     metaid as String,
                                     variable as String,
@@ -214,6 +223,7 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                 b"initialAssignment" => close![InitialAssignment],
                 b"listOfRules" => close![ListOfRules],
                 b"assignmentRule" => close![AssignmentRule],
+                b"rateRule" => close![RateRule],
                 _ => {}
             },
             // unescape and decode the text event using the reader encoding
@@ -237,9 +247,9 @@ mod tests {
     use super::*;
     #[test]
     fn it_works() {
-        for n in 25..26 {
+        for n in 31..32 {
             let filename = format!(
-                "../../testsuites/function-definition-test-suite/{:0>5}/{:0>5}-sbml-l3v2.xml",
+                "../../testsuites/core-semantic/{:0>5}/{:0>5}-sbml-l3v2.xml",
                 n, n
             );
             println!("{}", filename);

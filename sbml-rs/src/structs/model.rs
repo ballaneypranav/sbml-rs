@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     AssignmentRule, Compartment, FunctionDefinition, InitialAssignment, MathNode, MathTag,
-    Parameter, Reaction, Species, SpeciesReference, SpeciesStatus, Tag, UnitDefinition,
+    Parameter, RateRule, Reaction, Species, SpeciesReference, SpeciesStatus, Tag, UnitDefinition,
 };
 use std::fmt;
 
@@ -99,6 +99,7 @@ impl Model {
         function_definitions
     );
     objects_from_list!(ListOfRules, list_of_rules, AssignmentRule, assignment_rules);
+    objects_from_list!(ListOfRules, list_of_rules, RateRule, rate_rules);
     objects_from_list!(
         ListOfInitialAssignments,
         list_of_initial_assignments,
