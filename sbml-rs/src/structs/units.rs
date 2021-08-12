@@ -1,6 +1,6 @@
 use super::tag::TagIndex;
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfUnitDefinitions {
     pub unit_definitions: Vec<TagIndex>, // UnitDefinitions
     pub parent: Option<TagIndex>,
@@ -13,7 +13,7 @@ pub struct UnitDefinition {
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfUnits {
     pub units: Vec<TagIndex>, // Units
     pub parent: Option<TagIndex>,
@@ -28,7 +28,7 @@ pub struct Unit {
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 #[allow(dead_code)]
 enum UnitSId {
     Ampere,

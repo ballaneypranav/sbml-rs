@@ -5,7 +5,7 @@ use super::model::Model;
 use super::tag::{Tag, TagIndex};
 use std::collections::HashMap;
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfFunctionDefinitions {
     pub function_definitions: Vec<TagIndex>,
     pub parent: Option<TagIndex>,

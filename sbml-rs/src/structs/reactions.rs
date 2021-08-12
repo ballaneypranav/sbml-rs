@@ -4,7 +4,7 @@ use super::tag::Tag;
 use super::tag::TagIndex;
 use std::collections::HashMap;
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfReactions {
     pub reactions: Vec<TagIndex>,
     pub parent: Option<TagIndex>,
@@ -122,13 +122,13 @@ impl Reaction {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfReactants {
     pub species_references: Vec<TagIndex>,
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfProducts {
     pub species_references: Vec<TagIndex>,
     pub parent: Option<TagIndex>,
@@ -145,7 +145,7 @@ pub struct SpeciesReference {
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfModifiers {
     pub modifier_species_references: Vec<TagIndex>,
     pub parent: Option<TagIndex>,
@@ -160,7 +160,7 @@ pub struct ModifierSpeciesReference {
     pub parent: Option<TagIndex>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct KineticLaw {
     pub math: Option<TagIndex>,
     pub list_of_local_parameters: Option<TagIndex>,
@@ -195,7 +195,7 @@ impl KineticLaw {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfLocalParameters {
     pub local_parameters: Vec<TagIndex>,
     pub parent: Option<TagIndex>,

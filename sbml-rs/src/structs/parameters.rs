@@ -1,6 +1,6 @@
 use super::tag::TagIndex;
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfParameters {
     pub parameters: Vec<TagIndex>,
     pub parent: Option<TagIndex>,

@@ -2,7 +2,7 @@ use super::tag::TagIndex;
 use std::fmt;
 
 // SBML Model Root
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Root {
     pub list_of_species: Option<TagIndex>,
     pub list_of_reactions: Option<TagIndex>,

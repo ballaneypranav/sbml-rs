@@ -7,7 +7,7 @@ use crate::{
 use std::fmt;
 
 // An SBML Model container
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Model {
     pub id: Option<String>,
     pub name: Option<String>,
@@ -369,11 +369,5 @@ impl Model {
         }
 
         rxn_matrix
-    }
-}
-
-impl fmt::Display for Model {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Model")
     }
 }

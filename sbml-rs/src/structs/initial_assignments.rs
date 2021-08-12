@@ -1,6 +1,6 @@
 use crate::{MathTag, Model, Tag, TagIndex};
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfInitialAssignments {
     pub initial_assignments: Vec<TagIndex>,
     pub parent: Option<TagIndex>,

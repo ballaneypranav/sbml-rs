@@ -1,7 +1,7 @@
 use super::model::Model;
 use super::tag::TagIndex;
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfSpecies {
     pub species: Vec<TagIndex>,
     pub parent: Option<TagIndex>,

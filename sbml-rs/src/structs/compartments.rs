@@ -1,6 +1,6 @@
 use super::tag::TagIndex;
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfCompartments {
     pub compartments: Vec<TagIndex>,
     pub parent: Option<TagIndex>,

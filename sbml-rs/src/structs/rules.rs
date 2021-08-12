@@ -1,6 +1,6 @@
 use crate::{MathTag, Model, Tag, TagIndex};
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ListOfRules {
     pub assignment_rules: Vec<TagIndex>,
     pub rate_rules: Vec<TagIndex>,
