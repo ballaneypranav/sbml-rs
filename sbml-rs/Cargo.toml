@@ -15,4 +15,3 @@ readme = "README.md"
 quick-xml = "0.22.0"
 sbml-macros = { path = "../sbml-macros" , version = "0.1.1-alpha"}
 mathml-rs = { path = "../../mathml-rs/mathml-rs", version = "0.1.1-alpha"}
-convert_case = "0.4.0"
