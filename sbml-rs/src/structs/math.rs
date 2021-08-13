@@ -12,8 +12,10 @@ pub struct MathTag {
 
 impl fmt::Display for MathTag {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut count = 0;
         for node in &self.nodes {
-            writeln!(f, "{}", node)?;
+            writeln!(f, "{:2}: {}", count, node)?;
+            count += 1;
         }
         Ok(())
     }

@@ -7,7 +7,6 @@ use mathml_rs::Op;
 use mathml_rs::OpNode;
 use quick_xml::events::Event;
 use quick_xml::Reader;
-
 use sbml_macros::{attach, attach_math, close};
 
 pub mod structs;

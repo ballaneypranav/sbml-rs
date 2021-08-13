@@ -69,7 +69,7 @@ impl Model {
                 "areaUnits" => model.area_units = Some(value),
                 "lengthUnits" => model.length_units = Some(value),
                 "extentUnits" => model.extent_units = Some(value),
-                "volume_units" => model.volume_units = Some(value),
+                "volumeUnits" => model.volume_units = Some(value),
                 "conversion_factor" => model.conversion_factor = Some(value),
                 _ => panic!("Invalid attribute {} for model.", key),
             }
@@ -324,8 +324,8 @@ impl Model {
         hm
     }
 
-    pub fn reaction_matrix(&self) -> HashMap<(String, String), SpeciesStatus> {
-        let mut rxn_matrix: HashMap<(String, String), SpeciesStatus> = HashMap::new();
+    pub fn reaction_matrix(&self) -> HashMap<(String, String), Vec<SpeciesStatus>> {
+        let mut rxn_matrix: HashMap<(String, String), Vec<SpeciesStatus>> = HashMap::new();
 
         let species = &self.species();
         let reactions = &self.reactions();
@@ -338,32 +338,25 @@ impl Model {
                 let rxn_id = reaction.id.as_ref().unwrap().to_owned();
                 let reactants = all_reactants.get(&rxn_id).unwrap();
                 let products = all_products.get(&rxn_id).unwrap();
-                let mut inserted = false;
+
+                rxn_matrix.insert((sp_id.clone(), rxn_id.clone()), Vec::new());
 
                 for reactant in reactants {
                     if sp.id == reactant.species {
                         let stoichiometry = reactant.stoichiometry.unwrap();
-                        rxn_matrix.insert(
-                            (sp_id.clone(), rxn_id.clone()),
-                            SpeciesStatus::Reactant(stoichiometry),
-                        );
-                        inserted = true;
+                        rxn_matrix
+                            .entry((sp_id.clone(), rxn_id.clone()))
+                            .and_modify(|v| v.push(SpeciesStatus::Reactant(stoichiometry)));
                     }
                 }
 
                 for product in products {
                     if sp.id == product.species {
                         let stoichiometry = product.stoichiometry.unwrap();
-                        rxn_matrix.insert(
-                            (sp_id.clone(), rxn_id.clone()),
-                            SpeciesStatus::Product(stoichiometry),
-                        );
-                        inserted = true;
+                        rxn_matrix
+                            .entry((sp_id.clone(), rxn_id.clone()))
+                            .and_modify(|v| v.push(SpeciesStatus::Product(stoichiometry)));
                     }
-                }
-
-                if !inserted {
-                    rxn_matrix.insert((sp_id.clone(), rxn_id.clone()), SpeciesStatus::None);
                 }
             }
         }
