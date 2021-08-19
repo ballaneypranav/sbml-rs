@@ -1,6 +1,6 @@
 [package]
 name = "sbml-rs"
-version = "0.1.1-alpha.3"
+version = "0.1.1"
 authors = ["Pranav Ballaney <ballaneypranav@gmail.com>"]
 edition = "2018"
 description = "SBML parser written in Rust."
@@ -13,5 +13,5 @@ readme = "README.md"
 
 [dependencies]
 quick-xml = "0.22.0"
-sbml-macros = { path = "../sbml-macros" , version = "0.1.1-alpha"}
-mathml-rs = { path = "../../mathml-rs/mathml-rs", version = "0.1.1-alpha"}
+sbml-macros = { path = "../sbml-macros" , version = "0.1.1"}
+mathml-rs = { path = "../../mathml-rs/mathml-rs", version = "0.1.2"}
