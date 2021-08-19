@@ -10,7 +10,6 @@ use super::root::*;
 use super::rules::*;
 use super::species::*;
 use super::units::*;
-use std::fmt;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone)]

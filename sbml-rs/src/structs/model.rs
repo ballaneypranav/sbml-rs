@@ -4,7 +4,6 @@ use crate::{
     AssignmentRule, Compartment, FunctionDefinition, InitialAssignment, MathNode, MathTag,
     Parameter, RateRule, Reaction, Species, SpeciesReference, SpeciesStatus, Tag, UnitDefinition,
 };
-use std::fmt;
 
 // An SBML Model container
 #[derive(Clone, Debug, Default)]
