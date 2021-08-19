@@ -165,6 +165,7 @@ pub struct KineticLaw {
     pub math: Option<TagIndex>,
     pub list_of_local_parameters: Option<TagIndex>,
     pub parent: Option<TagIndex>,
+    pub sbo_term: Option<String>,
 }
 
 impl KineticLaw {

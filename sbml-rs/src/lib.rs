@@ -135,7 +135,9 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                                                     species as String,
                                                     sbo_term as String,
                                         to ListOfModifiers),
-                    b"kineticLaw" => attach!(KineticLaw to Reaction),
+                    b"kineticLaw" => attach!(KineticLaw with
+                                                    sbo_term as String,
+                                        to Reaction),
                     b"listOfLocalParameters" => attach!(ListOfLocalParameters to KineticLaw),
                     b"localParameter" => attach!(LocalParameter with
                                             id as String,
