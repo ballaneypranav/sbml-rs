@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     AssignmentRule, Compartment, FunctionDefinition, InitialAssignment, MathNode, MathTag,
-    Parameter, RateRule, Reaction, Species, SpeciesReference, SpeciesStatus, Tag, UnitDefinition,
+    Parameter, RateRule, Reaction, Species, SpeciesReference, Tag, UnitDefinition,
 };
 
 // An SBML Model container
@@ -126,138 +126,6 @@ impl Model {
         tags
     }
 
-    //Creates a HashMap from Parameters, Species and Compartments
-    //pub fn bindings(&self) -> HashMap<String, BindingValue> {
-    //let mut bindings = HashMap::<String, BindingValue>::new();
-
-    //Compartments
-    //let mut lo_comp_idx = None;
-    //if let Tag::Root(root) = &self.nodes[0] {
-    //lo_comp_idx = root.list_of_compartments;
-    //}
-    //if let Some(idx) = lo_comp_idx {
-    //if let Tag::ListOfCompartments(list_of_compartments) = &self.nodes[idx] {
-    //for comp_idx in &list_of_compartments.compartments {
-    //if let Tag::Compartment(comp) = &self.nodes[comp_idx.to_owned()] {
-    //if let Some(id) = comp.id.to_owned() {
-    //let mut binding_value = BindingValue::new(BindingType::Compartment);
-    //if let Some(size) = comp.size {
-    //binding_value.set(size);
-    //}
-    //hm.insert(id, binding_value);
-    //}
-    //}
-    //}
-    //}
-    //}
-
-    //Species
-    //let mut lo_sp_idx = None;
-    //if let Tag::Root(root) = &self.nodes[0] {
-    //lo_sp_idx = root.list_of_species;
-    //}
-    //if let Some(idx) = lo_sp_idx {
-    //if let Tag::ListOfSpecies(list_of_species) = &self.nodes[idx] {
-    //for sp_idx in &list_of_species.species {
-    //if let Tag::Species(sp) = &self.nodes[sp_idx.to_owned()] {
-    //if let Some(id) = sp.id.to_owned() {
-    //let mut binding_value = BindingValue::new(BindingType::SpeciesConc);
-    //A species can only have one of initial_amount and
-    //initial_concentration, "setting both is an error"
-    //Store whatever is set here, don't convert to conc
-    //Conversion is left to the simulator because compartment
-    //size can change
-    //if let Some(initial_amount) = sp.initial_amount {
-    //if sp.initial_concentration.is_none() {
-    //binding_value = BindingValue::new(BindingType::SpeciesAmt);
-    //binding_value.set(initial_amount);
-    //}
-    //} else if let Some(initial_concentration) = sp.initial_concentration {
-    //binding_value = BindingValue::new(BindingType::SpeciesConc);
-    //binding_value.set(initial_concentration);
-    //}
-    //if none of these is set, check the hasOnlySubstanceUnits attr
-    //else if let Some(true) = sp.has_only_substance_units {
-    //binding_value = BindingValue::new(BindingType::SpeciesAmt);
-    //}
-
-    //set constant attribute if appropriate
-    //if let Some(true) = sp.constant {
-    //binding_value.constant = true;
-    //}
-
-    //store value
-    //hm.insert(id, binding_value);
-    //}
-    //}
-    //}
-    //}
-    //}
-
-    //Parameters
-    //let mut lo_param_idx = None;
-    //if let Tag::Root(root) = &self.nodes[0] {
-    //lo_param_idx = root.list_of_parameters;
-    //}
-    //if let Some(idx) = lo_param_idx {
-    //if let Tag::ListOfParameters(list_of_parameters) = &self.nodes[idx] {
-    //for param_idx in &list_of_parameters.parameters {
-    //if let Tag::Parameter(param) = &self.nodes[param_idx.to_owned()] {
-    //if let Some(id) = param.id.to_owned() {
-    //let mut binding_value = BindingValue::new(BindingType::Parameter);
-    //if let Some(value) = param.value {
-    //binding_value.set(value);
-    //}
-    //hm.insert(id, binding_value);
-    //}
-    //}
-    //}
-    //}
-    //}
-
-    //let function_definitions = self.function_definition_math();
-
-    //Get values from hm
-    //let mut hm_values = HashMap::new();
-    //for (id, binding_value) in &hm {
-    //if let Some(value) = binding_value.value {
-    //hm_values.insert(id.clone(), value);
-    //}
-    //}
-
-    //Initial Assignments
-    //let mut lo_init_assignment_idx = None;
-    //if let Tag::Root(root) = &self.nodes[0] {
-    //lo_init_assignment_idx = root.list_of_initial_assignments;
-    //}
-    //if let Some(idx) = lo_init_assignment_idx {
-    //if let Tag::ListOfInitialAssignments(list_of_initial_assignments) = &self.nodes[idx] {
-    //for init_assignment_idx in &list_of_initial_assignments.initial_assignments {
-    //if let Tag::InitialAssignment(init_assignment) =
-    //&self.nodes[init_assignment_idx.to_owned()]
-    //{
-    //if let Some(symbol) = init_assignment.symbol.to_owned() {
-    //if let Some(math_tag) = init_assignment.math_tag(self) {
-    //let value = evaluate_node(
-    //&math_tag.nodes,
-    //0,
-    //&hm_values,
-    //&function_definitions,
-    //)
-    //.expect("Evaluation failed for initial assignment.");
-    //update values in HM
-    //hm_values.entry(symbol.clone()).and_modify(|v| *v = value);
-    //hm.entry(symbol).and_modify(|v| v.value = Some(value));
-    //}
-    //}
-    //}
-    //}
-    //}
-    //}
-
-    //hm
-    //}
-
     pub fn all_reactants(&self) -> HashMap<String, Vec<SpeciesReference>> {
         let mut result = HashMap::new();
         let reactions = self.reactions();
@@ -321,45 +189,5 @@ impl Model {
             hm.insert(rxn_id, local_parameters);
         }
         hm
-    }
-
-    pub fn reaction_matrix(&self) -> HashMap<(String, String), Vec<SpeciesStatus>> {
-        let mut rxn_matrix: HashMap<(String, String), Vec<SpeciesStatus>> = HashMap::new();
-
-        let species = &self.species();
-        let reactions = &self.reactions();
-        let all_reactants = &self.all_reactants();
-        let all_products = &self.all_products();
-
-        for sp in species {
-            let sp_id = sp.id.as_ref().unwrap().to_owned();
-            for reaction in reactions {
-                let rxn_id = reaction.id.as_ref().unwrap().to_owned();
-                let reactants = all_reactants.get(&rxn_id).unwrap();
-                let products = all_products.get(&rxn_id).unwrap();
-
-                rxn_matrix.insert((sp_id.clone(), rxn_id.clone()), Vec::new());
-
-                for reactant in reactants {
-                    if sp.id == reactant.species {
-                        let stoichiometry = reactant.stoichiometry.unwrap();
-                        rxn_matrix
-                            .entry((sp_id.clone(), rxn_id.clone()))
-                            .and_modify(|v| v.push(SpeciesStatus::Reactant(stoichiometry)));
-                    }
-                }
-
-                for product in products {
-                    if sp.id == product.species {
-                        let stoichiometry = product.stoichiometry.unwrap();
-                        rxn_matrix
-                            .entry((sp_id.clone(), rxn_id.clone()))
-                            .and_modify(|v| v.push(SpeciesStatus::Product(stoichiometry)));
-                    }
-                }
-            }
-        }
-
-        rxn_matrix
     }
 }

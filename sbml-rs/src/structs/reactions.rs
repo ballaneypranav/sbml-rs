@@ -210,20 +210,3 @@ pub struct LocalParameter {
     pub sbo_term: Option<String>,
     pub parent: Option<TagIndex>,
 }
-
-#[derive(Debug)]
-// used in a reaction matrix
-// specifies whether a particular species
-// is a reactant or a product in a particular reaction
-// along with its stoichiometry
-pub enum SpeciesStatus {
-    Reactant(f64),
-    Product(f64),
-    None,
-}
-
-impl Default for SpeciesStatus {
-    fn default() -> Self {
-        SpeciesStatus::None
-    }
-}
