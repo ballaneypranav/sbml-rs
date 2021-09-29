@@ -89,6 +89,7 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                     b"listOfParameters" => attach!(ListOfParameters to Root),
                     b"parameter" => attach!(Parameter with
                                             id as String,
+                                            metaid as String,
                                             name as String,
                                             value as f64,
                                             units as String,
