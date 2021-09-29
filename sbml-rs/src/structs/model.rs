@@ -110,8 +110,9 @@ impl Model {
         let mut tags = HashMap::new();
         for function_definition in self.function_definitions() {
             let id = function_definition.id.as_ref().unwrap().to_owned();
-            let math_tag = function_definition.math_tag(&self).unwrap();
-            tags.insert(id, math_tag.nodes);
+            if let Some(math_tag) = function_definition.math_tag(&self) {
+                tags.insert(id, math_tag.nodes);
+            }
         }
         tags
     }
