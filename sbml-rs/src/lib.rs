@@ -109,7 +109,7 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                                             has_only_substance_units as bool,
                                             boundary_condition as bool,
                                             constant as bool,
-                                            conversion_factor as String,
+                                            //conversion_factor as String,
                                     to ListOfSpecies),
                     b"listOfReactions" => attach!(ListOfReactions to Root),
                     b"reaction" => attach!(Reaction with
@@ -149,7 +149,6 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
                     b"math" => {
                         let (math_nodes, returned_reader) = mathml_rs::parse_fragment(reader);
                         reader = returned_reader;
-
                         attach_math![
                             KineticLaw,
                             FunctionDefinition,
@@ -313,6 +312,7 @@ pub fn parse_with_converted_species(filename: &str) -> Result<Model, Vec<String>
                                         math_tag_copy.nodes.push(species_math_node);
                                         math_tag_copy.nodes.push(compartment_math_node);
                                     }
+                                    //println!("{:?} changed", ci.name);
                                 }
                             }
                         }
