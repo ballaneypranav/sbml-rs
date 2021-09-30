@@ -1,10 +1,6 @@
 use std::collections::HashMap;
 use std::str;
 
-use mathml_rs::Apply;
-use mathml_rs::Ci;
-use mathml_rs::Op;
-use mathml_rs::OpNode;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 use sbml_macros::{attach, attach_math, close};
@@ -22,6 +18,8 @@ pub use structs::rules::*;
 pub use structs::species::*;
 pub use structs::tag::*;
 pub use structs::units::*;
+pub mod transformations;
+pub use transformations::*;
 
 #[allow(unused_variables, unused_assignments, dead_code)]
 pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
@@ -247,92 +245,9 @@ pub fn parse(filename: &str) -> Result<Model, Vec<String>> {
     Ok(model)
 }
 
-pub fn parse_with_converted_species(filename: &str) -> Result<Model, Vec<String>> {
-    let mut model = parse(filename)?;
-
-    let species = model.species();
-    let mut species_compartment_id = HashMap::<String, String>::new();
-    for sp in species {
-        if let Some(species_id) = sp.id {
-            if Some(false) == sp.has_only_substance_units {
-                if let Some(compartment_id) = sp.compartment {
-                    species_compartment_id.insert(species_id, compartment_id);
-                }
-            }
-        }
-    }
-    //for node in &model.nodes {
-    //if let Tag::MathTag(math_tag) = node {
-    //println!("{}", math_tag);
-    //}
-    //}
-
-    let mut new_nodes = model.nodes.clone();
-
-    for i in 0..model.nodes.len() {
-        match &model.nodes[i] {
-            // perform replacement in each MathTag
-            Tag::MathTag(math_tag) => {
-                for j in 0..math_tag.nodes.len() {
-                    match &math_tag.nodes[j] {
-                        // replace each Ci that refers to a species
-                        // with hasOnlySubstanceUnits = false
-                        MathNode::Ci(ci) => {
-                            if let Some(species_id) = &ci.name {
-                                // check if the species is in the hashmap made earlier
-                                if let Some(compartment) = species_compartment_id.get(species_id) {
-                                    // if it is, make changes to the copy
-                                    if let Tag::MathTag(math_tag_copy) = &mut new_nodes[i] {
-                                        // replace Species Ci node with an Apply node and insert
-                                        // Species Ci, Divide Op and Compartment Ci nodes at the end
-                                        // create nodes Apply, Divide and Compartment
-                                        let mut species_math_node = math_tag_copy.nodes[j].clone();
-                                        let mut apply = Apply::default();
-                                        let mut divide = OpNode::default();
-                                        divide.op = Some(Op::Divide);
-                                        let mut compartment = Ci::with_name(compartment.clone());
-
-                                        // set child and parent pointers
-                                        let length = math_tag_copy.nodes.len();
-                                        apply.parent = ci.parent;
-                                        apply.children = vec![length, length + 1, length + 2];
-                                        apply.operator = Some(length);
-                                        apply.operands = vec![length + 1, length + 2];
-                                        divide.parent = Some(j);
-                                        compartment.parent = Some(j);
-                                        if let MathNode::Ci(species) = &mut species_math_node {
-                                            species.parent = Some(j);
-                                        }
-
-                                        let apply_math_node = MathNode::Apply(apply);
-                                        let divide_math_node = MathNode::Op(divide);
-                                        let compartment_math_node = MathNode::Ci(compartment);
-                                        math_tag_copy.nodes[j] = apply_math_node;
-                                        math_tag_copy.nodes.push(divide_math_node);
-                                        math_tag_copy.nodes.push(species_math_node);
-                                        math_tag_copy.nodes.push(compartment_math_node);
-                                    }
-                                    //println!("{:?} changed", ci.name);
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-
-    model.nodes = new_nodes;
-
-    //for node in &model.nodes {
-    //if let Tag::MathTag(math_tag) = node {
-    //println!("{}", math_tag);
-    //}
-    //}
-
-    Ok(model)
+pub fn parse_and_transform(filename: &str) -> Result<Model, Vec<String>> {
+    let model = parse(filename)?;
+    transform(model)
 }
 
 #[cfg(test)]
@@ -346,7 +261,7 @@ mod tests {
                 n, n
             );
             println!("{}", filename);
-            let result = parse_with_converted_species(&filename);
+            let result = parse_and_transform(&filename);
             match result {
                 Ok(model) => {
                     let function_definitions = model.function_definitions();
